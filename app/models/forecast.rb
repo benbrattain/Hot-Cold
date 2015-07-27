@@ -1,15 +1,13 @@
 class Forecast < ActiveRecord::Base
-attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hours, :humidity
 
-
+attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hours, :humidity, :heat_index
 
   def store_location
-      self.store_city
-      self.store_state
-      self.city_to_slug
-      self.to_url
+    self.store_city
+    self.store_state
+    self.city_to_slug
+    self.to_url
   end
-
 
   def store_zip_output
     self.zip_output = ZipCodes.identify("#{self.zipcode}")
@@ -36,20 +34,19 @@ attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hou
     self.url = "http://api.wunderground.com/api/#{api}/hourly/q/#{self.state}/#{self.city_slug}.json"
   end
 
-  
   def scrape_json
     @api_response = open(self.url).read
   end
   
-  def collect_hours
+  def collect_hours # returns an array of 36 elements
     self.hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["hour"]}
   end
 
-  def collect_humidity
+  def collect_humidity # returns an array of 36 elements
     self.humidity = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["humidity"]}
   end
 
-  def collect_temperature
+  def collect_temperature # returns an array of 36 elements
     self.temperature = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["temp"]["english"]}
   end
 
@@ -60,46 +57,39 @@ attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hou
     self.collect_humidity
   end
 
+  def calculate_heat_index
 
-#   def full_heat_index(temp, rh)
-#    (-42.379 + (2.04901523*temp) + (10.14333127*rh) - (0.22475541*temp*rh) - (0.00683783*temp*temp) - (0.05481717*rh*rh) + (0.00122874*temp*temp*rh) + (0.00085282*temp*rh*rh) - (0.00000199*temp*temp*rh*rh)).to_i
-# end
+    i = 0
+    temp_array = self.temperature
+    humidity_array = self.humidity
+    heat_index_array = []
 
-# def simple_heat_index(temp, rh)
-#   (@simple_hi = 0.5 * (temp + 61 + ((temp-68)*1.2) + (rh*0.094))).to_i
-# end
+    while i < self.temperature.length do
 
-# def low_huminity_high_heat_adjustment(temp,rh)
-#   (((13-rh)/4)*((17-((temp-95).abs))/17)**0.5).to_i
-# end
+      temp = temp_array[i]
+      rh = humidity_array[i]
 
-# def high_huminity_high_heat_adjustment(temp,rh)
-#   (((rh-85)/10) * ((87-temp)/5)).to_i
-# end
+      simple_heat_index = (0.5 * (temp + 61 + ((temp-68)*1.2) + (rh*0.094))).to_i
+      full_heat_index = (-42.379 + (2.04901523*temp) + (10.14333127*rh) - (0.22475541*temp*rh) - (0.00683783*temp*temp) - (0.05481717*rh*rh) + (0.00122874*temp*temp*rh) + (0.00085282*temp*rh*rh) - (0.00000199*temp*temp*rh*rh)).to_i
+      
+      if  (simple_heat_index+temp)/2 >= 80
+        # if low humidity and hot, use full_heat_index and appropriate adjustment
+        if ((rh < 13) && (temp >= 80) && (temp < 112))
+          heat_index_array << (full_heat_index-(((13-rh)/4)*((17-((temp-95).abs))/17)**0.5).to_i)
+          # if high humidity and hot
+        elsif ((rh > 85) && (temp >= 80) && (temp <= 87))
+          heat_index_array << (full_heat_index-(((rh-85)/10) * ((87-temp)/5)).to_i)
+          # all other scenarios -- use a full heat index
+        else 
+          heat_index_array << full_heat_index
+        end
+        # use a simple heat index
+      else
+        heat_index_array << simple_heat_index
+      end # ends outer nested loop
+        i += 1
+    end # ends while
+    self.heat_index = heat_index_array
+  end # ends calculate_heat_index
 
-# def low_huminidity_and_hot?(temp,rh)
-#   ((rh < 13) && (temp >= 80) && (temp < 112))
-# end
-
-# def high_humidity_and_hot?(temp,rh)
-#   ((rh > 85) && (temp >= 80) && (temp <= 87))
-# end
-
-# def runner(temp, rh)
-#   if (@simple_hi.to_i+temp)/2 >= 80
-#     # apply full regression equation with or without adjustments
-#     if low_huminidity_and_hot?(temp,rh)
-#       puts full_heat_index(temp, rh)-low_huminity_high_heat_adjustment(temp,rh)
-#     elsif high_humidity_and_hot?(temp,rh)
-#       puts full_heat_index(temp, rh)-high_huminity_high_heat_adjustment(temp,rh)
-#     else
-#       puts full_heat_index(temp, rh)
-#     end
-#   else
-#     # return simple heat index
-#     puts simple_heat_index(temp, rh)
-#   end
-# end # ends runner
-
-
-end
+end # ends class
