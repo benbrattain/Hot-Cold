@@ -1,0 +1,8 @@
+<h1>Please enter your zip code:</h1>
+
+<%= form_for(@forecast) do |f| %>
+  <%= f.label :zipcode %>
+  <%= f.text_field :zipcode %>
+  <%= f.submit "Get your Forecast!" %>
+
+  <% end %>
