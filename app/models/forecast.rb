@@ -55,9 +55,10 @@ attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hou
     self.collect_hours
     self.collect_temperature
     self.collect_humidity
+    self.collect_heat_index
   end
 
-  def calculate_heat_index
+  def collect_heat_index
 
     i = 0
     temp_array = self.temperature
@@ -66,8 +67,8 @@ attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hou
 
     while i < self.temperature.length do
 
-      temp = temp_array[i]
-      rh = humidity_array[i]
+      temp = temp_array[i].to_f
+      rh = humidity_array[i].to_f
 
       simple_heat_index = (0.5 * (temp + 61 + ((temp-68)*1.2) + (rh*0.094))).to_i
       full_heat_index = (-42.379 + (2.04901523*temp) + (10.14333127*rh) - (0.22475541*temp*rh) - (0.00683783*temp*temp) - (0.05481717*rh*rh) + (0.00122874*temp*temp*rh) + (0.00085282*temp*rh*rh) - (0.00000199*temp*temp*rh*rh)).to_i

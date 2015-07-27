@@ -1,7 +1,7 @@
 <center><h1>Forecast for <%=@forecast.city %>, <%= @forecast.state %>:</h1></center>
 
 <br>
-<% @data = {
+<% @data_temps = {
     labels: @forecast.hours , 
     datasets: [
         {
@@ -29,4 +29,24 @@
 
 @options = {} %>
 
-<center> <%= line_chart @data, @options %> </center>
+<% @data_humidity = {
+    labels: @forecast.hours , 
+    datasets: [
+        {
+            label: "Temperatures, F",
+            fillColor: "rgba(220,220,220,0.2)",
+            strokeColor: "rgba(220,220,220,1)",
+            pointColor: "rgba(220,220,220,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+            data: @forecast.humidity
+        }
+    ]
+}
+
+@options = {} %>
+
+
+<center> <%= line_chart @data_temps, @options %> </center>
+<center> <%= line_chart @data_humidity, @options %> </center>
