@@ -1,6 +1,8 @@
+<center><h1>Forecast for <%=@forecast.city %>, <%= @forecast.state %>:</h1></center>
+
 <br>
 <% @data = {
-    labels: @forecast.hours, 
+    labels: @forecast.hours , 
     datasets: [
         {
             label: "Temperatures, F",
