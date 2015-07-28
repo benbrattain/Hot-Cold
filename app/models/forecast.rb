@@ -15,7 +15,8 @@ class Forecast < ActiveRecord::Base
               :discrepancy,
               :discrepancy_statement,
               :max_discrepancy_index,
-              :max_discrepancy_time_of_day
+              :max_discrepancy_time_of_day,
+              :t_shirt_statement
 
   def store_location
     self.store_city
@@ -91,6 +92,7 @@ class Forecast < ActiveRecord::Base
     self.set_now_statement
     self.set_conditions_icon
     self.discrepancy?
+    self.t_shirt_weather?
   end
 
   # http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
@@ -114,7 +116,7 @@ class Forecast < ActiveRecord::Base
     else
       if temperature_now >= 85 
         if humidity_now >= 60
-          self.now_statement = "hot and steamy! Move to Antarctica now!"
+          self.now_statement = "hot and gross! Move to Antarctica now!"
         else
           self.now_statement = "pretty darn hot!"
         end
@@ -171,6 +173,19 @@ class Forecast < ActiveRecord::Base
       self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted on #{self.max_discrepancy_time_of_day}."
     else
       self.discrepancy_statement = "It will feel pretty close to what meteorologists are saying."
+    end
+  end
+
+  def t_shirt_weather?
+    # Sunny Above 65 F 
+    # Cloudy/Windy Above 68 F 
+    # Rainy Above 73 F
+    temperature_now = self.temperature[0].to_i # in F
+    humidity_now = self.humidity[0].to_i # in %
+    if temperature_now >= 65
+      self.t_shirt_statement = "We think it is t-shirt weather."
+    else 
+      self.t_shirt_statement = "Not exactly t-shirt weather."
     end
   end
 
