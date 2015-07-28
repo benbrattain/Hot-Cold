@@ -63,6 +63,7 @@ attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hou
     self.collect_heat_index
   end
 
+  # http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
   def collect_heat_index
 
     i = 0
