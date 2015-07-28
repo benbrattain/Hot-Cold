@@ -41,9 +41,9 @@ class HeatIndexCalculator
     temp = forecast.temperature[i].to_f
   end
 
-  def humid_and_hot_adjustment(temp, humidity)
-    ((humidity-85)/10) * ((87-temp)/5)
-  end 
+  def humidity(i)
+    humidity = forecast.humidity[i].to_f
+  end
 
   def hot?(simple_heat_index, temp)
     (simple_heat_index+temp)/2 >= 80
@@ -55,14 +55,6 @@ class HeatIndexCalculator
 
   def hot_and_humid?(temp, humidity)
     (humidity > 85) && (temp >= 80) && (temp <= 87)
-  end
-
-  def dry_and_hot_adjustment(temp, humidity)
-    ((13-humidity)/4)*(((17-((temp-95).abs))/17)**0.5)
-  end
-
-  def humidity(i)
-    humidity = forecast.humidity[i].to_f
   end
 
   def simple_heat_index(temp, humidity)
@@ -80,4 +72,13 @@ class HeatIndexCalculator
     (0.00000199*temp*temp*humidity*humidity))
     .to_i
   end
+
+  def humid_and_hot_adjustment(temp, humidity)
+    ((humidity-85)/10) * ((87-temp)/5)
+  end 
+
+  def dry_and_hot_adjustment(temp, humidity)
+    ((13-humidity)/4)*(((17-((temp-95).abs))/17)**0.5)
+  end
+
 end

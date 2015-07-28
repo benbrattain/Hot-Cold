@@ -8,7 +8,7 @@
     labels: @forecast.hours , 
     datasets: [
         {
-            label: "Temperatures, F",
+            label: "Forecasted Temperature, F",
             fillColor: "rgba(220,220,220,0.2)",
             strokeColor: "rgba(220,220,220,1)",
             pointColor: "rgba(139,0,0,1)",
@@ -18,7 +18,7 @@
             data: @forecast.temperature
         },
         {
-            label: "Heat Index, F",
+            label: "Actual Temperature, F",
             fillColor: "rgba(151,187,205,0.2)",
             strokeColor: "rgba(178,34,34,1)",
             pointColor: "rgba(178,34,34,1)",
@@ -107,8 +107,8 @@ else
 <!-- some RGB colors to choose from http://www.rapidtables.com/web/color/RGB_Color.htm -->
 
 <br>
-<h4>Forecasted temperature vs. </h4>
-<h4>What it'll feel like</h4>
+<center><h4>Forecasted temperature vs. </h4></center>
+<center><h4>What it'll feel like</h4></center>
 <%= line_chart @data_temps, @options_temps %>
 </div>
 
@@ -118,6 +118,9 @@ else
 </div>
 <br>
 <h4 class = "form"><%= form_for @forecast, url: forecasts_path, method: "POST" do |f| %>
+
+<center><h4 align="right"><%= form_for @forecast, url: forecasts_path, method: "POST" do |f| %>
+  <%= f.label :zipcode %>
   <%= f.text_field :zipcode %>
   <%= f.submit "Get another forecast!" %>
 <% end %>
