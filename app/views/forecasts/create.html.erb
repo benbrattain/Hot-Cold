@@ -117,6 +117,7 @@ else
     <h2><%= @forecast.discrepancy_statement %></h2>
     <h2><%= @forecast.t_shirt_statement %></h2>
 </div>
+
 <br>
 <h4 class = "form"><%= form_for @forecast, url: forecasts_path, method: "POST" do |f| %>
     <h4 align="right">
@@ -124,4 +125,6 @@ else
     <%= f.submit "Get another forecast!" %>
     <% end %>
 </h4>
+
+<%= link_to "Home", root_path, class: 'button' %>
 
