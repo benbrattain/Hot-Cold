@@ -6,12 +6,10 @@
 
 <center>
 <%= form_for(@forecast) do |f| %>
-  <%= f.label :zipcode %>
   <%= f.text_field :zipcode %>
   <%= f.submit "Get your Forecast!" %>
 <% end %>
 </center>
-
 
 <footer class="footer">
   <p style="display:inline">

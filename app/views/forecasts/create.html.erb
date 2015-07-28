@@ -120,7 +120,6 @@ else
 <br>
 <h4 class = "form"><%= form_for @forecast, url: forecasts_path, method: "POST" do |f| %>
     <h4 align="right">
-    <%= f.label :zipcode %>
     <%= f.text_field :zipcode %>
     <%= f.submit "Get another forecast!" %>
     <% end %>
