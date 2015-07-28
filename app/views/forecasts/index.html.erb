@@ -2,11 +2,12 @@
     <div class="notice"><%= flash[:notice] %></div>
   <% end %>
 
-<h1>Please enter your zip code:</h1>
+<center><h1>Please enter your zip code:</h1></center>
 
+<center>
 <%= form_for(@forecast) do |f| %>
   <%= f.label :zipcode %>
   <%= f.text_field :zipcode %>
   <%= f.submit "Get your Forecast!" %>
-
-  <% end %>
+<% end %>
+</center>
