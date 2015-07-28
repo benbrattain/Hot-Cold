@@ -40,9 +40,16 @@
                     scaleGridLineColor: "rgba(250,128,114,0.1)"
                     # scaleOverride: true
                     } %>
+
+
+
+<!-- Today is forecast to be WARMER than yesterday -->
+<!-- It today is later then 6pm, 'tomorrow will be hotter than today'
+else
+'today is hotter than yesterday' -->
 <!-- lots of animation opportunities... I picked the above pretty much randomly as they don't make much of a difference for smaller charts such as ours -->
 
-
+<!-- <h1>
 <% @data_humidity = {
     labels: @forecast.hours, 
     datasets: [
@@ -95,14 +102,18 @@
                         scaleLineColor: "rgba(139,0,0,1)",
                         scaleGridLineColor: "rgba(250,128,114,0.1)"
                         } %>
-
+</h1> -->
 <!-- some RGB colors to choose from http://www.rapidtables.com/web/color/RGB_Color.htm -->
 
 <br>
 <h4>Forecasted temperature vs. </h4>
 <h4>What it'll feel like</h4>
 <%= line_chart @data_temps, @options_temps %>
-<center><h2>Humidity Forecast</h2></center>
+
+<h2>Right now: <img src=<%=@forecast.conditions_icon%> alt="clear"> <%=@forecast.temperature[0]%>F, <%=@forecast.humidity[0]%>% humidity.</h2>
+<h2><%= @forecast.discrepancy_statement %><%=@forecast.max_discrepancy_time_of_day%></h2>
+
+<!-- <center><h2>Humidity Forecast</h2></center>
 <center> <%= line_chart @data_humidity, @options_humidity %> </center>
 <center><h2>Wind Chill Forecast</h2></center>
-<center> <%= line_chart @data_wind_chill, @options_wind_chill %> </center>
+<center> <%= line_chart @data_wind_chill, @options_wind_chill %> </center> -->
