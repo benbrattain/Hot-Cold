@@ -120,7 +120,7 @@ class Forecast < ActiveRecord::Base
         end
       elsif temperature_now.between?(65,84)
         if humidity_now >= 60
-          self.now_statement = "not that hot, but super humid!"
+          self.now_statement = "not that hot, but very humid!"
         else
           self.now_statement = "not too hot, not too humid! Every once in a while, you can stop bitching about the weather."
         end
@@ -166,7 +166,7 @@ class Forecast < ActiveRecord::Base
     self.discrepancy_max
     self.find_max_discrepancy_time_of_day
     if self.discrepancy.max >= 7
-        self.discrepancy_statement = "Wunderground.com said it will be nice out. They are wrong. It will feel MUCH hotter than that on #{self.max_discrepancy_time_of_day}."
+        self.discrepancy_statement = "Wunderground.com said it will be nice out. They are wrong. It will feel MUCH hotter than what they said on #{self.max_discrepancy_time_of_day}."
     elsif self.discrepancy.max.between?(4,6)
       self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted on #{self.max_discrepancy_time_of_day}."
     else
