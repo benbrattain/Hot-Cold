@@ -1,7 +1,7 @@
 <center><h1>Forecast for <%=@forecast.city %>, <%= @forecast.state %>:</h1></center>
 
 <br>
-<% @data = {
+<% @data_temps = {
     labels: @forecast.hours , 
     datasets: [
         {
@@ -15,7 +15,7 @@
             data: @forecast.temperature
         },
         {
-            label: "Relative Humidity, %",
+            label: "Heat Index, F",
             fillColor: "rgba(151,187,205,0.2)",
             strokeColor: "rgba(151,187,205,1)",
             pointColor: "rgba(151,187,205,1)",
@@ -29,4 +29,48 @@
 
 @options = {} %>
 
-<center> <%= line_chart @data, @options %> </center>
+
+<% @data_humidity = {
+    labels: @forecast.hours , 
+    datasets: [
+        {
+            label: "Relative Humidity, %",
+            fillColor: "rgba(220,220,220,0.2)",
+            strokeColor: "rgba(220,220,220,1)",
+            pointColor: "rgba(220,220,220,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+            data: @forecast.humidity
+        }
+    ]
+}
+
+@options = {} %>
+
+
+<% @data_wind_chill = {
+    labels: @forecast.hours , 
+    datasets: [
+        {
+            label: "Wind Chill, F",
+            fillColor: "rgba(220,220,220,0.2)",
+            strokeColor: "rgba(220,220,220,1)",
+            pointColor: "rgba(220,220,220,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(220,220,220,1)",
+            data: @forecast.wind_chill
+        }
+    ]
+}
+
+@options = {} %>
+
+
+<center><h2>Temperature and Heat Index Forecast</h2></center>
+<center> <%= line_chart @data_temps, @options %> </center>
+<center><h2>Humidity Forecast</h2></center>
+<center> <%= line_chart @data_humidity, @options %> </center>
+<center><h2>Wind Chill Forecast</h2></center>
+<center> <%= line_chart @data_wind_chill, @options %> </center>

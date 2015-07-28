@@ -1,6 +1,15 @@
 class Forecast < ActiveRecord::Base
 
-attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hours, :humidity, :heat_index
+attr_accessor :zip_output, 
+              :weather_output, 
+              :url, 
+              :city_slug, 
+              :temperature, 
+              :hours, 
+              :humidity, 
+              :heat_index, 
+              :wind_speed, 
+              :wind_chill
 
   def store_location
     self.store_city
@@ -50,46 +59,59 @@ attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hou
     self.temperature = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["temp"]["english"]}
   end
 
+  def collect_wind_speed # returns an array of 36 elements
+    self.wind_speed = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["wspd"]["english"]}
+  end
+
   def collect_data
     self.scrape_json
     self.collect_hours
     self.collect_temperature
     self.collect_humidity
+    self.collect_heat_index
+    self.collect_wind_speed
+    self.collect_wind_chill
   end
 
-  def calculate_heat_index
-
+  # http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
+  def collect_heat_index
     i = 0
-    temp_array = self.temperature
-    humidity_array = self.humidity
-    heat_index_array = []
-
+    self.heat_index = []
     while i < self.temperature.length do
-
-      temp = temp_array[i]
-      rh = humidity_array[i]
-
-      simple_heat_index = (0.5 * (temp + 61 + ((temp-68)*1.2) + (rh*0.094))).to_i
-      full_heat_index = (-42.379 + (2.04901523*temp) + (10.14333127*rh) - (0.22475541*temp*rh) - (0.00683783*temp*temp) - (0.05481717*rh*rh) + (0.00122874*temp*temp*rh) + (0.00085282*temp*rh*rh) - (0.00000199*temp*temp*rh*rh)).to_i
-      
+      temp = self.temperature[i].to_f
+      humidity = self.humidity[i].to_f
+      simple_heat_index = (0.5 * (temp + 61 + ((temp-68)*1.2) + (humidity*0.094))).to_i
+      full_heat_index = (-42.379 + (2.04901523*temp) + (10.14333127*humidity) - (0.22475541*temp*humidity) - (0.00683783*temp*temp) - (0.05481717*humidity*humidity) + (0.00122874*temp*temp*humidity) + (0.00085282*temp*humidity*humidity) - (0.00000199*temp*temp*humidity*humidity)).to_i
+      dry_and_hot_adjustment = (((13-humidity)/4)*(((17-((temp-95).abs))/17)**0.5))  
+      humid_and_hot_adjustment = ((humidity-85)/10) * ((87-temp)/5)
       if  (simple_heat_index+temp)/2 >= 80
-        # if low humidity and hot, use full_heat_index and appropriate adjustment
-        if ((rh < 13) && (temp >= 80) && (temp < 112))
-          heat_index_array << (full_heat_index-(((13-rh)/4)*((17-((temp-95).abs))/17)**0.5).to_i)
-          # if high humidity and hot
-        elsif ((rh > 85) && (temp >= 80) && (temp <= 87))
-          heat_index_array << (full_heat_index-(((rh-85)/10) * ((87-temp)/5)).to_i)
-          # all other scenarios -- use a full heat index
+        if ((humidity < 13) && (temp >= 80) && (temp < 112)) # especially dry and hot
+          self.heat_index << (full_heat_index-dry_and_hot_adjustment).to_i
+        elsif ((humidity > 85) && (temp >= 80) && (temp <= 87)) # especially humid and hot
+          self.heat_index << (full_heat_index-humid_and_hot_adjustment).to_i
         else 
-          heat_index_array << full_heat_index
+          self.heat_index << full_heat_index
         end
-        # use a simple heat index
       else
-        heat_index_array << simple_heat_index
+        self.heat_index << simple_heat_index
       end # ends outer nested loop
         i += 1
     end # ends while
-    self.heat_index = heat_index_array
+    self.heat_index
   end # ends calculate_heat_index
+
+  # http://www.srh.noaa.gov/images/epz/wxcalc/windChill.pdf
+  def collect_wind_chill
+    i = 0
+    self.wind_chill = []
+    while i < self.wind_speed.length do
+      temp = self.temperature[i].to_f
+      wind_speed = self.wind_speed[i].to_f
+      wind_chill_calc = (35.74+(0.6215*temp)-(35.75*(wind_speed**0.16))+(0.4275*temp*(wind_speed**0.16))).to_i
+      self.wind_chill << wind_chill_calc
+      i += 1
+    end # ends while
+    self.wind_chill
+  end # ends collect_wind_chill
 
 end # ends class
