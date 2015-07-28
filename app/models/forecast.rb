@@ -93,6 +93,8 @@ attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hou
     self.heat_index
   end # ends calculate_heat_index
 
+  # http://www.srh.noaa.gov/images/epz/wxcalc/windChill.pdf
+  # WindChill = 35.74 + (0.6215 × T) − (35.75 × Wind ** 0.16) + (0.4275 × T × Wind ** 0.16)
   def collect_wind_chill
 
   end
