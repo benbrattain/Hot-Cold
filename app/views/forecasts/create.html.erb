@@ -22,12 +22,14 @@
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(151,187,205,1)",
+            :generateLegend => :true,
             data: @forecast.heat_index
         }
     ]
 }
 
-@options = {animationEasing: "easeOutElastic"} %>
+@options_temps = {animationEasing: "easeOutElastic",
+            :generateLegend => true} %>
 <!-- lots of animation opportunities... I picked the above pretty much randomly as they don't make much of a difference for smaller charts such as ours -->
 
 
@@ -70,7 +72,7 @@
 
 
 <center><h2>Temperature and Heat Index Forecast</h2></center>
-<center> <%= line_chart @data_temps, @options %> </center>
+<center> <%= line_chart @data_temps, @options_temps %> </center>
 <center><h2>Humidity Forecast</h2></center>
 <center> <%= line_chart @data_humidity, @options %> </center>
 <center><h2>Wind Chill Forecast</h2></center>
