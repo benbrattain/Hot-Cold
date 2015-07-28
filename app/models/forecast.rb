@@ -9,7 +9,8 @@ attr_accessor :zip_output,
               :humidity, 
               :heat_index, 
               :wind_speed, 
-              :wind_chill
+              :wind_chill,
+              :now_statement
 
   def store_location
     self.store_city
@@ -71,6 +72,7 @@ attr_accessor :zip_output,
     self.collect_heat_index
     self.collect_wind_speed
     self.collect_wind_chill
+    self.set_now_statement
   end
 
   # http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
@@ -113,6 +115,30 @@ attr_accessor :zip_output,
     end # ends while
     self.wind_chill
   end # ends collect_wind_chill
+
+  def set_now_statement
+    temperature_now = self.temperature[0].to_i # in F
+    humidity_now = self.humidity[0].to_i # in %
+    time_now = Time.now.to_a[2] # returns ONLY hour in 24 hour format
+    if time_now.between?(0,5) || time_now.between?(23,24)
+      self.now_statement = "night time. Go to bed."
+    else
+      if temperature_now >= 85 
+        if humidity_now >= 60
+          self.now_statement = "hot and steamy!"
+        else
+          self.now_statement = "pretty darn hot!"
+        end
+      else
+        if humidity_now >= 60
+          self.now_statement = "not that hot, but super humid!"
+        else
+          self.now_statement = "not too hot, not too humid!"
+        end
+      end 
+    end # ends time
+    # self.wind_speed
+  end # end set_now_statement
 
   # def get_time
   #   hour = Time.now.to_a[2]

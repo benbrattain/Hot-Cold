@@ -1,7 +1,8 @@
-<center><h1>Forecast for the next 36 hours</h1></center>
-<center><h1> in <%=@forecast.city %>, <%= @forecast.state %>:</h1></center>
-
-<br>
+<center><h1>Right now in <%=@forecast.city %>, <%= @forecast.state %> (<%= @forecast.zipcode%>):<%= %></h1></center>
+<center><h1>it is <%=@forecast.now_statement%> </h1></center>
+<!-- <center><h1>From [forecast start time] to [forecast end time]</h1></center>
+<center><h1>It will be...<%= %></h1></center>
+ -->
 <% @data_temps = {
     labels: @forecast.hours , 
     datasets: [
@@ -97,9 +98,10 @@
 
 <!-- some RGB colors to choose from http://www.rapidtables.com/web/color/RGB_Color.htm -->
 
-
-<center><h2>Temperature and Heat Index Forecast</h2></center>
-<center> <%= line_chart @data_temps, @options_temps %> </center>
+<br>
+<h4>Forecasted temperature vs. </h4>
+<h4>What it'll feel like</h4>
+<%= line_chart @data_temps, @options_temps %>
 <center><h2>Humidity Forecast</h2></center>
 <center> <%= line_chart @data_humidity, @options_humidity %> </center>
 <center><h2>Wind Chill Forecast</h2></center>
