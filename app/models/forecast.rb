@@ -12,7 +12,10 @@ attr_accessor :zip_output,
               :wind_chill,
               :now_statement,
               :conditions_icon,
-              :discrepancy
+              :discrepancy,
+              :discrepancy_statement,
+              :max_discrepancy_index,
+              :max_discrepancy_time_of_day
 
   def store_location
     self.store_city
@@ -76,7 +79,8 @@ attr_accessor :zip_output,
     self.collect_wind_chill
     self.set_now_statement
     self.set_conditions_icon
-    self.discrepancy_max
+    self.discrepancy?
+    self.find_max_discrepancy_time_of_day
   end
 
   # http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
@@ -165,19 +169,24 @@ attr_accessor :zip_output,
 
   def discrepancy?
     self.discrepancy_max
-    if self.discrepancy > 3
-      "Watch out! There is a difference of it will feel much hotter than forecasted."
+    if self.discrepancy >= 7
+      self.discrepancy_statement = "Exercise extreme caution. It will feel MUCH, much hotter than forecasted "
+    elsif self.discrepancy.between?(4,6)
+      self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted "
+    else
+      self.discrepancy_statement = "It will feel pretty close to what meteorologists are saying."
+    end
   end
 
+  def find_discrepancy_index
+    calculate_discrepancy
+    self.max_discrepancy_index = self.discrepancy.find_index(self.discrepancy.max)
+  end
 
-
-  # def get_time
-  #   hour = Time.now.to_a[2]
-  #   if hour.between?(0,12 )
-  #     formatted_time = "#{hour}am"
-  #   else
-  #     formatted_time = "#{hour-12}am"
-  #   end
-  # end
+  def find_max_discrepancy_time_of_day
+    find_discrepancy_index # this should return index we are looking for
+    weekday_name_array = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["weekday_name_night_unlang"]}
+    self.max_discrepancy_time_of_day = weekday_name_array[self.max_discrepancy_index]
+  end
 
 end # ends class
