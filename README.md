@@ -1,4 +1,4 @@
-# Weather
+# Hot-or-Cold
 
 ## Description
 
