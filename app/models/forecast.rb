@@ -1,6 +1,15 @@
 class Forecast < ActiveRecord::Base
 
-attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hours, :humidity, :heat_index, :wind_speed
+attr_accessor :zip_output, 
+              :weather_output, 
+              :url, 
+              :city_slug, 
+              :temperature, 
+              :hours, 
+              :humidity, 
+              :heat_index, 
+              :wind_speed, 
+              :wind_chill
 
   def store_location
     self.store_city
@@ -59,16 +68,15 @@ attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hou
     self.collect_hours
     self.collect_temperature
     self.collect_humidity
-    self.collect_wind_speed
     self.collect_heat_index
+    self.collect_wind_speed
+    self.collect_wind_chill
   end
 
   # http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
   def collect_heat_index
-
     i = 0
     self.heat_index = []
-
     while i < self.temperature.length do
       temp = self.temperature[i].to_f
       humidity = self.humidity[i].to_f
@@ -76,7 +84,6 @@ attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hou
       full_heat_index = (-42.379 + (2.04901523*temp) + (10.14333127*humidity) - (0.22475541*temp*humidity) - (0.00683783*temp*temp) - (0.05481717*humidity*humidity) + (0.00122874*temp*temp*humidity) + (0.00085282*temp*humidity*humidity) - (0.00000199*temp*temp*humidity*humidity)).to_i
       dry_and_hot_adjustment = (((13-humidity)/4)*(((17-((temp-95).abs))/17)**0.5))  
       humid_and_hot_adjustment = ((humidity-85)/10) * ((87-temp)/5)
-
       if  (simple_heat_index+temp)/2 >= 80
         if ((humidity < 13) && (temp >= 80) && (temp < 112)) # especially dry and hot
           self.heat_index << (full_heat_index-dry_and_hot_adjustment).to_i
@@ -94,9 +101,16 @@ attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hou
   end # ends calculate_heat_index
 
   # http://www.srh.noaa.gov/images/epz/wxcalc/windChill.pdf
-  # WindChill = 35.74 + (0.6215 × T) − (35.75 × Wind ** 0.16) + (0.4275 × T × Wind ** 0.16)
   def collect_wind_chill
-
-  end
+    i = 0
+    self.wind_chill = []
+    while i < self.wind_speed.length do
+      temp = self.temperature[i].to_f
+      wind_speed = self.wind_speed[i].to_f
+      self.wind_chill << (35.74+(0.6215*temp)-(35.75*(wind_speed**0.16))+(0.4275*temp*(wind_speed**0.16))).to_i
+      i += 1
+    end # ends while
+    self.wind_chill
+  end # ends collect_wind_chill
 
 end # ends class
