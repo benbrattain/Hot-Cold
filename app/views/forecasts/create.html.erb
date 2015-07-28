@@ -29,6 +29,7 @@
 
 @options = {} %>
 
+
 <% @data_humidity = {
     labels: @forecast.hours , 
     datasets: [
@@ -47,6 +48,7 @@
 
 @options = {} %>
 
-
+<center><h2>Temperature and Heat Index Forecast</h2></center>
 <center> <%= line_chart @data_temps, @options %> </center>
+<center><h2>Humidity Forecast</h2></center>
 <center> <%= line_chart @data_humidity, @options %> </center>
