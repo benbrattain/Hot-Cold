@@ -114,20 +114,23 @@ class Forecast < ActiveRecord::Base
     else
       if temperature_now >= 85 
         if humidity_now >= 60
-          self.now_statement = "hot and steamy!"
+          self.now_statement = "hot and steamy! Move to Antarctica now!"
         else
           self.now_statement = "pretty darn hot!"
         end
-      else
+      elsif temperature_now.between?(65,84)
         if humidity_now >= 60
           self.now_statement = "not that hot, but super humid!"
         else
-          self.now_statement = "not too hot, not too humid!"
+          self.now_statement = "not too hot, not too humid! Every once in a while, you can stop bitching about the weather."
         end
+      elsif temperature_now.between?(42,64)
+        self.now_statement = "not too warm. Layer up."
+      else 
+        self.now_statement = "COLD. I hope you are a penguin."
       end 
-    end # ends time
-    # self.wind_speed
-  end # end set_now_statement
+    end 
+  end 
 
   def set_conditions_icon # shows an icon for current conditions, such as clear, overcast etc
     self.conditions_icon = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["icon_url"]}.first
