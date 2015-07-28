@@ -200,7 +200,7 @@ class Forecast < ActiveRecord::Base
     elsif temperature_now >= 42
       self.t_shirt_statement = "Not exactly T-shirt weather."
     else 
-      self.t_shirt_statement = "LAYERS! Lots of them."
+      self.t_shirt_statement = "LAYERS! Wear them."
     end
   end
 
