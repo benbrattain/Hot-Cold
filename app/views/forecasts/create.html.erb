@@ -27,8 +27,10 @@
     ]
 }
 
-@options_temps = {animationEasing: "easeOutElastic",
-            :generateLegend => true} %>
+@options_temps =    {animationEasing: "easeOutElastic",
+                    :generateLegend => true,
+                    :scaleFontSize => 10
+                    } %>
 <!-- lots of animation opportunities... I picked the above pretty much randomly as they don't make much of a difference for smaller charts such as ours -->
 
 
@@ -48,7 +50,9 @@
     ]
 }
 
-@options_humidity = {:generateLegend => true} %>
+@options_humidity =     {:generateLegend => true,
+                        :scaleFontSize => 10
+                        } %>
 
 
 <% @data_wind_chill = {
@@ -67,7 +71,9 @@
     ]
 }
 
-@options_wind_chill = {:generateLegend => true} %>
+@options_wind_chill =   {:generateLegend => true,
+                        :scaleFontSize => 10
+                        } %>
 
 
 <center><h2>Temperature and Heat Index Forecast</h2></center>
