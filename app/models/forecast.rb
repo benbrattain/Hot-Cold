@@ -1,5 +1,6 @@
 class Forecast < ActiveRecord::Base
 
+
 attr_accessor :zip_output, 
               :weather_output, 
               :url, 
@@ -28,7 +29,7 @@ attr_accessor :zip_output,
     self.zip_output = ZipCodes.identify("#{self.zipcode}")
   end
 
-  def valid_zip?
+  def valid_zip? 
      self.zip_output != nil
   end
 
@@ -49,7 +50,7 @@ attr_accessor :zip_output,
     self.url = "http://api.wunderground.com/api/#{api}/hourly/q/#{self.state}/#{self.city_slug}.json"
   end
 
-  def scrape_json
+  def scrape_json # creates a json object using appropriate url
     @api_response = open(self.url).read
   end
   
@@ -84,29 +85,8 @@ attr_accessor :zip_output,
 
   # http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
   def collect_heat_index
-    i = 0
-    self.heat_index = []
-    while i < self.temperature.length do
-      temp = self.temperature[i].to_f
-      humidity = self.humidity[i].to_f
-      simple_heat_index = (0.5 * (temp + 61 + ((temp-68)*1.2) + (humidity*0.094))).to_i
-      full_heat_index = (-42.379 + (2.04901523*temp) + (10.14333127*humidity) - (0.22475541*temp*humidity) - (0.00683783*temp*temp) - (0.05481717*humidity*humidity) + (0.00122874*temp*temp*humidity) + (0.00085282*temp*humidity*humidity) - (0.00000199*temp*temp*humidity*humidity)).to_i
-      dry_and_hot_adjustment = (((13-humidity)/4)*(((17-((temp-95).abs))/17)**0.5))  
-      humid_and_hot_adjustment = ((humidity-85)/10) * ((87-temp)/5)
-      if  (simple_heat_index+temp)/2 >= 80
-        if ((humidity < 13) && (temp >= 80) && (temp < 112)) # especially dry and hot
-          self.heat_index << (full_heat_index-dry_and_hot_adjustment).to_i
-        elsif ((humidity > 85) && (temp >= 80) && (temp <= 87)) # especially humid and hot
-          self.heat_index << (full_heat_index-humid_and_hot_adjustment).to_i
-        else 
-          self.heat_index << full_heat_index
-        end
-      else
-        self.heat_index << simple_heat_index
-      end # ends outer nested loop
-        i += 1
-    end # ends while
-    self.heat_index
+    heat_index_calculator = HeatIndexCalculator.new(self)
+    self.heat_index = heat_index_calculator.calculate
   end # ends calculate_heat_index
 
   # http://www.srh.noaa.gov/images/epz/wxcalc/windChill.pdf
