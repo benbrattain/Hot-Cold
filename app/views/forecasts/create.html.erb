@@ -116,13 +116,15 @@ else
 <h2>Right now: <img src=<%=@forecast.conditions_icon%> alt="clear"> <%=@forecast.temperature[0]%>F, <%=@forecast.humidity[0]%>% humidity.</h2>
 <h2><%= @forecast.discrepancy_statement %></h2>
 </div>
+<br>
+<h4 class = "form"><%= form_for @forecast, url: forecasts_path, method: "POST" do |f| %>
 
 <center><h4 align="right"><%= form_for @forecast, url: forecasts_path, method: "POST" do |f| %>
   <%= f.label :zipcode %>
   <%= f.text_field :zipcode %>
-  <%= f.submit "Get your forecast!" %>
+  <%= f.submit "Get another forecast!" %>
 <% end %>
-</h4></center>
+</h4>
 
 <!-- <center><h2>Humidity Forecast</h2></center>
 <center> <%= line_chart @data_humidity, @options_humidity %> </center>
