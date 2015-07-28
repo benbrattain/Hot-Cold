@@ -122,7 +122,7 @@ class Forecast < ActiveRecord::Base
     else
       if temperature_now >= 85 
         if humidity_now >= 60
-          self.now_statement = "hot and gross! Move to Antarctica now!"
+          self.now_statement = "hot and gross! Consider a move to Antarctica."
         else
           self.now_statement = "pretty darn hot!"
         end
@@ -174,7 +174,7 @@ class Forecast < ActiveRecord::Base
     self.discrepancy_max
     self.find_max_discrepancy_time_of_day
     if self.discrepancy.max >= 7
-        self.discrepancy_statement = "Wunderground.com said it will be nice out. They are wrong. It will feel MUCH hotter than what they said on #{self.max_discrepancy_time_of_day}."
+        self.discrepancy_statement = "Wunderground.com said it will be nice out, but it will feel MUCH hotter than what they said on #{self.max_discrepancy_time_of_day}."
     elsif self.discrepancy.max.between?(4,6)
       self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted on #{self.max_discrepancy_time_of_day}."
     else
@@ -183,9 +183,9 @@ class Forecast < ActiveRecord::Base
   end
 
   def t_shirt_weather?
-    # Sunny Above 65 F 
-    # Cloudy/Windy Above 68 F 
-    # Rainy Above 73 F
+    # Sunny above 65 F 
+    # Cloudy above 68 F 
+    # Rainy above 73 F
     temperature_now = self.temperature[0].to_i # in F
     humidity_now = self.humidity[0].to_i # in %
     status_now = self.status[0]
@@ -201,7 +201,7 @@ class Forecast < ActiveRecord::Base
       elsif temperature_now >= 42
         self.t_shirt_statement = "Not exactly T-shirt weather."
       else 
-        self.t_shirt_statement = "LAYERS! Wear them."
+        self.t_shirt_statement = "LAYERS! Lots of them."
       end
     end
   end
