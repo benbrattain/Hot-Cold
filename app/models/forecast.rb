@@ -1,7 +1,6 @@
 class Forecast < ActiveRecord::Base
 
-
-attr_accessor :zip_output, 
+  attr_accessor :zip_output, 
               :weather_output, 
               :url, 
               :city_slug, 
@@ -98,20 +97,10 @@ attr_accessor :zip_output,
   def collect_heat_index
     heat_index_calculator = HeatIndexCalculator.new(self)
     self.heat_index = heat_index_calculator.calculate
-  end # ends calculate_heat_index
+  end 
 
   # http://www.srh.noaa.gov/images/epz/wxcalc/windChill.pdf
   def collect_wind_chill
-    # i = 0
-    # self.wind_chill = []
-    # while i < self.wind_speed.length do
-    #   temp = self.temperature[i].to_f
-    #   wind_speed = self.wind_speed[i].to_f
-    #   wind_chill_calc = (35.74+(0.6215*temp)-(35.75*(wind_speed**0.16))+(0.4275*temp*(wind_speed**0.16))).to_i
-    #   self.wind_chill << wind_chill_calc
-    #   i += 1
-    # end 
-    # self.wind_chill
     wind_chill_calculator = WindChillCalculator.new(self)
     self.wind_chill = wind_chill_calculator.calculate
   end 
@@ -121,7 +110,7 @@ attr_accessor :zip_output,
     humidity_now = self.humidity[0].to_i # in %
     time_now = Time.now.to_a[2] # returns ONLY hour in 24 hour format
     if time_now.between?(0,5) || time_now.between?(23,24)
-      self.now_statement = "night time. Go to bed."
+      self.now_statement = "night time. Dear Lord. Don't you sleep? "
     else
       if temperature_now >= 85 
         if humidity_now >= 60
