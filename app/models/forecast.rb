@@ -16,6 +16,7 @@ class Forecast < ActiveRecord::Base
               :discrepancy_statement,
               :max_discrepancy_index,
               :max_discrepancy_time_of_day,
+              :status,
               :t_shirt_statement
 
   def store_location
@@ -81,6 +82,10 @@ class Forecast < ActiveRecord::Base
     self.wind_speed = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["wspd"]["english"]}
   end
 
+  def collect_status
+    self.status = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["wx"]}
+  end
+
   def collect_data
     self.scrape_json
     self.collect_hours
@@ -89,6 +94,7 @@ class Forecast < ActiveRecord::Base
     self.collect_heat_index
     self.collect_wind_speed
     self.collect_wind_chill
+    self.collect_status
     self.set_now_statement
     self.set_conditions_icon
     self.discrepancy?
@@ -182,10 +188,19 @@ class Forecast < ActiveRecord::Base
     # Rainy Above 73 F
     temperature_now = self.temperature[0].to_i # in F
     humidity_now = self.humidity[0].to_i # in %
-    if temperature_now >= 65
-      self.t_shirt_statement = "We think it is t-shirt weather."
+    status_now = self.status[0]
+    if temperature_now >= 65 
+      if ( status_now == "Clear" || status_now == "Mostly Sunny" || status_now == "Sunny" || status_now == "Mostly Clear")
+        self.t_shirt_statement = "We think it is T-shirt weather."
+      elsif temperature_now >= 68 && (status_now == "Partly Cloudy" || status_now == "Mostly Cloudy" || status_now == "Cloudy")
+        self.t_shirt_statement = "We think it is T-shirt weather."
+      else temperature_now >= 73 && (status_now == "Scattered Thunderstorms" || status_now == "Isolated Thunderstorms")
+        self.t_shirt_statement = "We think it is T-shirt weather."
+      end
+    elsif temperature_now >= 42
+      self.t_shirt_statement = "Not exactly T-shirt weather."
     else 
-      self.t_shirt_statement = "Not exactly t-shirt weather."
+      self.t_shirt_statement = "LAYERS! Lots of them."
     end
   end
 

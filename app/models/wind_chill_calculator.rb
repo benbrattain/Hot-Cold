@@ -11,15 +11,12 @@ class WindChillCalculator
     i = 0
     self.wind_chill = []
     while i < 36 do 
-    # while i < self.wind_speed.length do 
       temp = temp(i)
       wind_speed = wind_speed(i)
-      # humidity = humidity(i)
-      # wind_speed = forecast.wind_speed[i].to_f
       wind_chill_calc = (35.74+(0.6215*temp)-(35.75*(wind_speed**0.16))+(0.4275*temp*(wind_speed**0.16))).to_i
       self.wind_chill << wind_chill_calc
       i += 1
-    end # ends while
+    end 
     self.wind_chill
   end
 
