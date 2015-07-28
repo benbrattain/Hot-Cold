@@ -22,7 +22,6 @@
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(151,187,205,1)",
-            :generateLegend => :true,
             data: @forecast.heat_index
         }
     ]
@@ -49,7 +48,7 @@
     ]
 }
 
-@options = {} %>
+@options_humidity = {:generateLegend => true} %>
 
 
 <% @data_wind_chill = {
@@ -68,12 +67,12 @@
     ]
 }
 
-@options = {} %>
+@options_wind_chill = {:generateLegend => true} %>
 
 
 <center><h2>Temperature and Heat Index Forecast</h2></center>
 <center> <%= line_chart @data_temps, @options_temps %> </center>
 <center><h2>Humidity Forecast</h2></center>
-<center> <%= line_chart @data_humidity, @options %> </center>
+<center> <%= line_chart @data_humidity, @options_humidity %> </center>
 <center><h2>Wind Chill Forecast</h2></center>
-<center> <%= line_chart @data_wind_chill, @options %> </center>
+<center> <%= line_chart @data_wind_chill, @options_wind_chill %> </center>
