@@ -55,7 +55,18 @@ attr_accessor :zip_output,
   end
   
   def collect_hours # returns an array of 36 elements
-    self.hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["hour"]}
+    unformatted_hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["hour"]}
+    self.hours = []
+    unformatted_hours.each do |hour|
+      if hour.to_i.between?(13,23)
+        hour = hour.to_i - 12
+      elsif hour.to_i == 0
+        hour = 12
+      else
+        hour = hour.to_i
+      end
+      self.hours << hour.to_s
+    end
   end
 
   def collect_humidity # returns an array of 36 elements
