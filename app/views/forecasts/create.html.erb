@@ -28,15 +28,16 @@
 }
 
 @options_temps =    {animationEasing: "easeOutElastic",
-                    :generateLegend => true,
-                    :scaleFontSize => 10,
-                    :responsive => true
+                    generateLegend: true,
+                    scaleFontSize: 10,
+                    responsive: false,
+                    datasetFill: false
                     } %>
 <!-- lots of animation opportunities... I picked the above pretty much randomly as they don't make much of a difference for smaller charts such as ours -->
 
 
 <% @data_humidity = {
-    labels: @forecast.hours , 
+    labels: @forecast.hours, 
     datasets: [
         {
             label: "Relative Humidity, %",
@@ -52,8 +53,9 @@
 }
 
 @options_humidity =     {:generateLegend => true,
-                        :scaleFontSize => 10,
-                        :responsive => true
+                        scaleFontSize: 10,
+                        responsive: false,
+                        datasetFill: false
                         } %>
 
 
@@ -73,9 +75,10 @@
     ]
 }
 
-@options_wind_chill =   {:generateLegend => true,
-                        :scaleFontSize => 10,
-                        :responsive => true
+@options_wind_chill =   {generateLegend: true,
+                        scaleFontSize: 10,
+                        responsive: false,
+                        datasetFill: false
                         } %>
 
 
