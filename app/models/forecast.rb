@@ -80,7 +80,6 @@ attr_accessor :zip_output,
     self.set_now_statement
     self.set_conditions_icon
     self.discrepancy?
-    self.find_max_discrepancy_time_of_day
   end
 
   # http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
@@ -167,17 +166,6 @@ attr_accessor :zip_output,
     self.discrepancy = self.discrepancy.max
   end
 
-  def discrepancy?
-    self.discrepancy_max
-    if self.discrepancy >= 7
-      self.discrepancy_statement = "Exercise extreme caution. It will feel MUCH, much hotter than forecasted "
-    elsif self.discrepancy.between?(4,6)
-      self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted "
-    else
-      self.discrepancy_statement = "It will feel pretty close to what meteorologists are saying."
-    end
-  end
-
   def find_discrepancy_index
     calculate_discrepancy
     self.max_discrepancy_index = self.discrepancy.find_index(self.discrepancy.max)
@@ -187,6 +175,18 @@ attr_accessor :zip_output,
     find_discrepancy_index # this should return index we are looking for
     weekday_name_array = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["weekday_name_night_unlang"]}
     self.max_discrepancy_time_of_day = weekday_name_array[self.max_discrepancy_index]
+  end
+
+  def discrepancy?
+    self.discrepancy_max
+    self.find_max_discrepancy_time_of_day
+    if self.discrepancy.max >= 7
+        self.discrepancy_statement = "Wunderground.com said it will be nice out. They are wrong. It will feel MUCH hotter than that on #{self.max_discrepancy_time_of_day}."
+    elsif self.discrepancy.max.between?(4,6)
+      self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted on #{self.max_discrepancy_time_of_day}."
+    else
+      self.discrepancy_statement = "It will feel pretty close to what meteorologists are saying."
+    end
   end
 
 end # ends class
