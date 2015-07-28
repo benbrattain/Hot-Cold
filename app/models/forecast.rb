@@ -114,4 +114,13 @@ attr_accessor :zip_output,
     self.wind_chill
   end # ends collect_wind_chill
 
+  # def get_time
+  #   hour = Time.now.to_a[2]
+  #   if hour.between?(0,12 )
+  #     formatted_time = "#{hour}am"
+  #   else
+  #     formatted_time = "#{hour-12}am"
+  #   end
+  # end
+
 end # ends class
