@@ -189,18 +189,20 @@ class Forecast < ActiveRecord::Base
     temperature_now = self.temperature[0].to_i # in F
     humidity_now = self.humidity[0].to_i # in %
     status_now = self.status[0]
-    if temperature_now >= 65 
-      if ( status_now == "Clear" || status_now == "Mostly Sunny" || status_now == "Sunny" || status_now == "Mostly Clear")
-        self.t_shirt_statement = "It is T-shirt weather for most humans."
-      elsif temperature_now >= 68 && (status_now == "Partly Cloudy" || status_now == "Mostly Cloudy" || status_now == "Cloudy")
-        self.t_shirt_statement = "Probably T-shirt weather. A bit overcast."
-      else temperature_now >= 73 && (status_now == "Scattered Thunderstorms" || status_now == "Isolated Thunderstorms")
-        self.t_shirt_statement = "T-shirt weather, but bring a rain jacket."
+    if Time.now.to_a[2].between?(5,19) # will only show up if it is daytime
+      if temperature_now >= 65 
+        if ( status_now == "Clear" || status_now == "Mostly Sunny" || status_now == "Sunny" || status_now == "Mostly Clear")
+          self.t_shirt_statement = "It is T-shirt weather for most people."
+        elsif temperature_now >= 68 && (status_now == "Partly Cloudy" || status_now == "Mostly Cloudy" || status_now == "Cloudy")
+            self.t_shirt_statement = "Probably T-shirt weather: a bit overcast."
+        else temperature_now >= 73 && (status_now == "Scattered Thunderstorms" || status_now == "Isolated Thunderstorms")
+          self.t_shirt_statement = "T-shirt weather, but bring a rain jacket."
+        end
+      elsif temperature_now >= 42
+        self.t_shirt_statement = "Not exactly T-shirt weather."
+      else 
+        self.t_shirt_statement = "LAYERS! Wear them."
       end
-    elsif temperature_now >= 42
-      self.t_shirt_statement = "Not exactly T-shirt weather."
-    else 
-      self.t_shirt_statement = "LAYERS! Wear them."
     end
   end
 
