@@ -17,21 +17,24 @@ class HeatIndexCalculator
       full_heat_index = full_heat_index(temp, humidity)
       dry_and_hot_adjustment = dry_and_hot_adjustment(temp, humidity)
       humid_and_hot_adjustment = humid_and_hot_adjustment(temp, humidity)
-      
-      if hot?(simple_heat_index, temp)
-        if hot_and_dry?(temp, humidity) 
-          self.heat_index << (full_heat_index-dry_and_hot_adjustment).to_i
-        elsif hot_and_humid?(temp, humidity) 
-          self.heat_index << (full_heat_index-humid_and_hot_adjustment).to_i
-        else 
-          self.heat_index << full_heat_index
-        end
-      else
-        self.heat_index << simple_heat_index
-      end # ends outer nested loop
-        i += 1
-    end # ends while
+      run_heat_index_calc(simple_heat_index, full_heat_index, temp, humidity)
+      i += 1
+    end 
     self.heat_index
+  end
+
+  def run_heat_index_calc(simple_heat_index, full_heat_index, temp, humidity)
+    if hot?(simple_heat_index, temp)
+      if hot_and_dry?(temp, humidity) 
+        self.heat_index << (full_heat_index-dry_and_hot_adjustment).to_i
+      elsif hot_and_humid?(temp, humidity) 
+        self.heat_index << (full_heat_index-humid_and_hot_adjustment).to_i
+      else 
+        self.heat_index << full_heat_index
+      end
+    else
+      self.heat_index << simple_heat_index
+    end 
   end
 
   def temp(i)
