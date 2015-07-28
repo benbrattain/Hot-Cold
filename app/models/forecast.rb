@@ -1,23 +1,23 @@
 class Forecast < ActiveRecord::Base
 
   attr_accessor :zip_output, 
-              :weather_output, 
-              :url, 
-              :city_slug, 
-              :temperature, 
-              :hours, 
-              :humidity, 
-              :heat_index, 
-              :wind_speed, 
-              :wind_chill,
-              :now_statement,
-              :conditions_icon,
-              :discrepancy,
-              :discrepancy_statement,
-              :max_discrepancy_index,
-              :max_discrepancy_time_of_day,
-              :status,
-              :t_shirt_statement
+                :weather_output, 
+                :url, 
+                :city_slug, 
+                :temperature, 
+                :hours, 
+                :humidity, 
+                :heat_index, 
+                :wind_speed, 
+                :wind_chill,
+                :now_statement,
+                :conditions_icon,
+                :discrepancy,
+                :discrepancy_statement,
+                :max_discrepancy_index,
+                :max_discrepancy_time_of_day,
+                :status,
+                :t_shirt_statement
 
   def store_location
     self.store_city
