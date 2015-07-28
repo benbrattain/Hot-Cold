@@ -1,6 +1,6 @@
 class Forecast < ActiveRecord::Base
 
-attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hours, :humidity, :heat_index
+attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hours, :humidity, :heat_index, :wind_speed
 
   def store_location
     self.store_city
@@ -50,11 +50,16 @@ attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hou
     self.temperature = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["temp"]["english"]}
   end
 
+  def collect_wind_speed # returns an array of 36 elements
+    self.wind_speed = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["wspd"]["english"]}
+  end
+
   def collect_data
     self.scrape_json
     self.collect_hours
     self.collect_temperature
     self.collect_humidity
+    self.collect_wind_speed
     self.collect_heat_index
   end
 
@@ -86,5 +91,9 @@ attr_accessor :zip_output, :weather_output, :url, :city_slug, :temperature, :hou
     end # ends while
     self.heat_index
   end # ends calculate_heat_index
+
+  def collect_wind_chill
+
+  end
 
 end # ends class
