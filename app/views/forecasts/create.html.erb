@@ -111,7 +111,7 @@ else
 <%= line_chart @data_temps, @options_temps %>
 
 <h2>Right now: <img src=<%=@forecast.conditions_icon%> alt="clear"> <%=@forecast.temperature[0]%>F, <%=@forecast.humidity[0]%>% humidity.</h2>
-<h2><%= @forecast.discrepancy_statement %><%=@forecast.max_discrepancy_time_of_day%></h2>
+<h2><%= @forecast.discrepancy_statement %></h2>
 
 <!-- <center><h2>Humidity Forecast</h2></center>
 <center> <%= line_chart @data_humidity, @options_humidity %> </center>
