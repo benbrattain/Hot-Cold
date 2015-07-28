@@ -10,7 +10,9 @@ attr_accessor :zip_output,
               :heat_index, 
               :wind_speed, 
               :wind_chill,
-              :now_statement
+              :now_statement,
+              :conditions_icon,
+              :discrepancy
 
   def store_location
     self.store_city
@@ -73,6 +75,8 @@ attr_accessor :zip_output,
     self.collect_wind_speed
     self.collect_wind_chill
     self.set_now_statement
+    self.set_conditions_icon
+    self.discrepancy_max
   end
 
   # http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
@@ -139,6 +143,33 @@ attr_accessor :zip_output,
     end # ends time
     # self.wind_speed
   end # end set_now_statement
+
+  def set_conditions_icon # shows an icon for current conditions, such as clear, overcast etc
+    self.conditions_icon = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["icon_url"]}.first
+  end
+
+  def calculate_discrepancy
+    self.discrepancy = []
+    i = 0
+    while i < 36
+      num = self.heat_index[i].to_i - self.temperature[i].to_i
+      self.discrepancy << num
+      i += 1
+    end
+  end
+
+  def discrepancy_max
+    self.calculate_discrepancy
+    self.discrepancy = self.discrepancy.max
+  end
+
+  def discrepancy?
+    self.discrepancy_max
+    if self.discrepancy > 3
+      "Watch out! There is a difference of it will feel much hotter than forecasted."
+  end
+
+
 
   # def get_time
   #   hour = Time.now.to_a[2]
