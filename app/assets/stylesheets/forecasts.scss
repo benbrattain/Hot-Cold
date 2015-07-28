@@ -3,8 +3,8 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 #chart_wrapper {
-  height: 550px;
-  width: 550px;
+  height: 650px;
+  width: 500px;
   float: left;
   display: inline-block;
   padding-top: 50px;
@@ -13,9 +13,14 @@
 
 #dashboard_wrapper {
   height: 550px;
-  width: 550px;
+  width: 500px;
   float: right;
   display: inline-block;
   padding-top: 50px;
   margin-right: 50px;
+}
+
+.form {
+  clear: both;
+  padding-left: 30px;
 }

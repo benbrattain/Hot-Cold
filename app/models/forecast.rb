@@ -1,7 +1,6 @@
 class Forecast < ActiveRecord::Base
 
-
-attr_accessor :zip_output, 
+  attr_accessor :zip_output, 
               :weather_output, 
               :url, 
               :city_slug, 
@@ -16,7 +15,9 @@ attr_accessor :zip_output,
               :discrepancy,
               :discrepancy_statement,
               :max_discrepancy_index,
-              :max_discrepancy_time_of_day
+              :max_discrepancy_time_of_day,
+              :status,
+              :t_shirt_statement
 
   def store_location
     self.store_city
@@ -81,6 +82,10 @@ attr_accessor :zip_output,
     self.wind_speed = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["wspd"]["english"]}
   end
 
+  def collect_status
+    self.status = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["wx"]}
+  end
+
   def collect_data
     self.scrape_json
     self.collect_hours
@@ -89,29 +94,21 @@ attr_accessor :zip_output,
     self.collect_heat_index
     self.collect_wind_speed
     self.collect_wind_chill
+    self.collect_status
     self.set_now_statement
     self.set_conditions_icon
     self.discrepancy?
+    self.t_shirt_weather?
   end
 
   # http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
   def collect_heat_index
     heat_index_calculator = HeatIndexCalculator.new(self)
     self.heat_index = heat_index_calculator.calculate
-  end # ends calculate_heat_index
+  end 
 
   # http://www.srh.noaa.gov/images/epz/wxcalc/windChill.pdf
   def collect_wind_chill
-    # i = 0
-    # self.wind_chill = []
-    # while i < self.wind_speed.length do
-    #   temp = self.temperature[i].to_f
-    #   wind_speed = self.wind_speed[i].to_f
-    #   wind_chill_calc = (35.74+(0.6215*temp)-(35.75*(wind_speed**0.16))+(0.4275*temp*(wind_speed**0.16))).to_i
-    #   self.wind_chill << wind_chill_calc
-    #   i += 1
-    # end 
-    # self.wind_chill
     wind_chill_calculator = WindChillCalculator.new(self)
     self.wind_chill = wind_chill_calculator.calculate
   end 
@@ -121,24 +118,27 @@ attr_accessor :zip_output,
     humidity_now = self.humidity[0].to_i # in %
     time_now = Time.now.to_a[2] # returns ONLY hour in 24 hour format
     if time_now.between?(0,5) || time_now.between?(23,24)
-      self.now_statement = "night time. Go to bed."
+      self.now_statement = "night time. Dear Lord. Don't you sleep? "
     else
       if temperature_now >= 85 
         if humidity_now >= 60
-          self.now_statement = "hot and steamy!"
+          self.now_statement = "hot and gross! Move to Antarctica now!"
         else
           self.now_statement = "pretty darn hot!"
         end
-      else
+      elsif temperature_now.between?(65,84)
         if humidity_now >= 60
-          self.now_statement = "not that hot, but super humid!"
+          self.now_statement = "not that hot, but very humid!"
         else
-          self.now_statement = "not too hot, not too humid!"
+          self.now_statement = "not too hot, not too humid! Every once in a while, you can stop bitching about the weather."
         end
+      elsif temperature_now.between?(42,64)
+        self.now_statement = "not too warm. Layer up."
+      else 
+        self.now_statement = "COLD. I hope you are a penguin."
       end 
-    end # ends time
-    # self.wind_speed
-  end # end set_now_statement
+    end 
+  end 
 
   def set_conditions_icon # shows an icon for current conditions, such as clear, overcast etc
     self.conditions_icon = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["icon_url"]}.first
@@ -174,11 +174,33 @@ attr_accessor :zip_output,
     self.discrepancy_max
     self.find_max_discrepancy_time_of_day
     if self.discrepancy.max >= 7
-        self.discrepancy_statement = "Wunderground.com said it will be nice out. They are wrong. It will feel MUCH hotter than that on #{self.max_discrepancy_time_of_day}."
+        self.discrepancy_statement = "Wunderground.com said it will be nice out. They are wrong. It will feel MUCH hotter than what they said on #{self.max_discrepancy_time_of_day}."
     elsif self.discrepancy.max.between?(4,6)
       self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted on #{self.max_discrepancy_time_of_day}."
     else
       self.discrepancy_statement = "It will feel pretty close to what meteorologists are saying."
+    end
+  end
+
+  def t_shirt_weather?
+    # Sunny Above 65 F 
+    # Cloudy/Windy Above 68 F 
+    # Rainy Above 73 F
+    temperature_now = self.temperature[0].to_i # in F
+    humidity_now = self.humidity[0].to_i # in %
+    status_now = self.status[0]
+    if temperature_now >= 65 
+      if ( status_now == "Clear" || status_now == "Mostly Sunny" || status_now == "Sunny" || status_now == "Mostly Clear")
+        self.t_shirt_statement = "It is T-shirt weather for most humans."
+      elsif temperature_now >= 68 && (status_now == "Partly Cloudy" || status_now == "Mostly Cloudy" || status_now == "Cloudy")
+        self.t_shirt_statement = "Probably T-shirt weather. A bit overcast."
+      else temperature_now >= 73 && (status_now == "Scattered Thunderstorms" || status_now == "Isolated Thunderstorms")
+        self.t_shirt_statement = "T-shirt weather, but bring a rain jacket."
+      end
+    elsif temperature_now >= 42
+      self.t_shirt_statement = "Not exactly T-shirt weather."
+    else 
+      self.t_shirt_statement = "LAYERS! Wear them."
     end
   end
 
