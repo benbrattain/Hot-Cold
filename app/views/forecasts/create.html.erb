@@ -3,6 +3,7 @@
 <!-- <center><h1>From [forecast start time] to [forecast end time]</h1></center>
 <center><h1>It will be...<%= %></h1></center>
  -->
+ <div id= 'chart_wrapper'>
 <% @data_temps = {
     labels: @forecast.hours , 
     datasets: [
@@ -109,10 +110,12 @@ else
 <h4>Forecasted temperature vs. </h4>
 <h4>What it'll feel like</h4>
 <%= line_chart @data_temps, @options_temps %>
+</div>
 
+<div id = "dashboard_wrapper">
 <h2>Right now: <img src=<%=@forecast.conditions_icon%> alt="clear"> <%=@forecast.temperature[0]%>F, <%=@forecast.humidity[0]%>% humidity.</h2>
 <h2><%= @forecast.discrepancy_statement %></h2>
-
+</div>
 <!-- <center><h2>Humidity Forecast</h2></center>
 <center> <%= line_chart @data_humidity, @options_humidity %> </center>
 <center><h2>Wind Chill Forecast</h2></center>
