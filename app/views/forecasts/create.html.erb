@@ -8,7 +8,7 @@
             label: "Temperatures, F",
             fillColor: "rgba(220,220,220,0.2)",
             strokeColor: "rgba(220,220,220,1)",
-            pointColor: "rgba(220,220,220,1)",
+            pointColor: "rgba(139,0,0,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(220,220,220,1)",
@@ -17,8 +17,8 @@
         {
             label: "Heat Index, F",
             fillColor: "rgba(151,187,205,0.2)",
-            strokeColor: "rgba(151,187,205,1)",
-            pointColor: "rgba(151,187,205,1)",
+            strokeColor: "rgba(178,34,34,1)",
+            pointColor: "rgba(178,34,34,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(151,187,205,1)",
@@ -31,7 +31,12 @@
                     generateLegend: true,
                     scaleFontSize: 10,
                     responsive: false,
-                    datasetFill: false
+                    datasetFill: false,
+                    width: 400,
+                    height: 400,
+                    scaleLineColor: "rgba(139,0,0,1)",
+                    scaleGridLineColor: "rgba(250,128,114,1)"
+                    # scaleOverride: true
                     } %>
 <!-- lots of animation opportunities... I picked the above pretty much randomly as they don't make much of a difference for smaller charts such as ours -->
 
@@ -42,8 +47,8 @@
         {
             label: "Relative Humidity, %",
             fillColor: "rgba(220,220,220,0.2)",
-            strokeColor: "rgba(220,220,220,1)",
-            pointColor: "rgba(220,220,220,1)",
+            strokeColor: "rgba(178,34,34,1)",
+            pointColor: "rgba(178,34,34,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(220,220,220,1)",
@@ -55,7 +60,10 @@
 @options_humidity =     {:generateLegend => true,
                         scaleFontSize: 10,
                         responsive: false,
-                        datasetFill: false
+                        datasetFill: false,
+                        width: 400,
+                        height: 400,
+                        scaleLineColor: "rgba(139,0,0,1)"
                         } %>
 
 
@@ -65,11 +73,11 @@
         {
             label: "Wind Chill, F",
             fillColor: "rgba(220,220,220,0.2)",
-            strokeColor: "rgba(220,220,220,1)",
-            pointColor: "rgba(220,220,220,1)",
+            strokeColor: "rgba(178,34,34,1)",
+            pointColor: "rgba(178,34,34,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(220,220,220,1)",
+            pointHighlightStroke: "rgba(205,92,92,1)",
             data: @forecast.wind_chill
         }
     ]
@@ -78,8 +86,13 @@
 @options_wind_chill =   {generateLegend: true,
                         scaleFontSize: 10,
                         responsive: false,
-                        datasetFill: false
+                        datasetFill: false,
+                        width: 400,
+                        height: 400,
+                        scaleLineColor: "rgba(139,0,0,1)"
                         } %>
+
+<!-- some RGB colors to choose from http://www.rapidtables.com/web/color/RGB_Color.htm -->
 
 
 <center><h2>Temperature and Heat Index Forecast</h2></center>
