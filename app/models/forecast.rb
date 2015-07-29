@@ -23,7 +23,9 @@ class Forecast < ActiveRecord::Base
                 :t_shirt_statement,
                 :uv_index,
                 :uv_statement,
-                :all_hours
+                :all_hours,
+                :max_time,
+                :max_day
 
   def store_location
     self.store_city
@@ -135,7 +137,7 @@ class Forecast < ActiveRecord::Base
         if humid?
           self.now_statement = "hot and gross! Kind of like a wet gym sock left out in a hamper."
         else
-          self.now_statement = "pretty darn hot! Sort of like a pizza oven."
+          self.now_statement = "pretty darn hot!"
         end
       elsif reasonably_hot?
         if humid?
@@ -213,7 +215,16 @@ class Forecast < ActiveRecord::Base
     self.discrepancy_index_array = self.discrepancy.each_index.select{|x| self.discrepancy[x] == self.discrepancy.max} # returns array of correct indices
     self.first_discrepancy = self.discrepancy_index_array.first 
     self.all_hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["pretty"]}
-    self.discrepancy_index = self.all_hours[self.first_discrepancy] # finds first value
+    self.discrepancy_index = self.all_hours[self.first_discrepancy] 
+    # civil: "11:00 AM" -- 11am
+    # puts Time.now.to_a[3] # gets date 29
+    self.max_time = self.all_hours[self.first_discrepancy].split(" ")[0]+self.all_hours[self.first_discrepancy].split(" ")[1] # 11am
+    if Time.now.to_a[3] == self.all_hours[self.first_discrepancy].split(" ")[5].split(",").join("").to_i
+      self.max_day = "today"
+    else 
+      self.max_day = "tomorrow"
+    end # puts "11:00 AM EDT on July 29, 2015".split(" ")[5].split(",").join("").to_i 29
+    # Time.now.to_a[3] == "11:00 AM EDT on July 29, 2015".split(" ")[5].split(",").join("").to_i
     # binding.pry
   end
 
@@ -223,7 +234,7 @@ class Forecast < ActiveRecord::Base
     if self.find_discrepancy_max >= 7
       self.discrepancy_statement = "Wunderground.com said it will be nice out, but it will feel MUCH hotter than what they said starting around #{self.discrepancy_index}."
     elsif self.find_discrepancy_max.between?(4,6)
-      self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted starting around #{self.discrepancy_index}."
+      self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted starting around #{self.max_time} #{self.max_day}."
     else
       self.discrepancy_statement = "It will feel pretty close to what meteorologists are saying in the next 36 hours."
     end
