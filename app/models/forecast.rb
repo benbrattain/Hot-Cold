@@ -216,16 +216,12 @@ class Forecast < ActiveRecord::Base
     self.first_discrepancy = self.discrepancy_index_array.first 
     self.all_hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["pretty"]}
     self.discrepancy_index = self.all_hours[self.first_discrepancy] 
-    # civil: "11:00 AM" -- 11am
-    # puts Time.now.to_a[3] # gets date 29
     self.max_time = self.all_hours[self.first_discrepancy].split(" ")[0]+self.all_hours[self.first_discrepancy].split(" ")[1] # 11am
     if Time.now.to_a[3] == self.all_hours[self.first_discrepancy].split(" ")[5].split(",").join("").to_i
       self.max_day = "today"
     else 
       self.max_day = "tomorrow"
-    end # puts "11:00 AM EDT on July 29, 2015".split(" ")[5].split(",").join("").to_i 29
-    # Time.now.to_a[3] == "11:00 AM EDT on July 29, 2015".split(" ")[5].split(",").join("").to_i
-    # binding.pry
+    end
   end
 
   def discrepancy?
