@@ -224,7 +224,7 @@ class Forecast < ActiveRecord::Base
   end
 
   # https://en.wikipedia.org/wiki/Ultraviolet_index
-  def need_suncreen? # no message if index is 0,1,2 or if it's night time
+  def need_suncreen? # no message if index is 0,1,2 or if it's night time; uv index is always between 0 and 12
     uv_now = self.uv_index[0].to_i
     if daytime? 
       case uv_now
@@ -234,7 +234,7 @@ class Forecast < ActiveRecord::Base
         self.uv_statement = "UV index is pretty high. Grab your trusty SPF 30+."
       when 8..10
         self.uv_statement = "UV index is really high. Cover up."
-      when 11..12
+      when 11..12 # uv index is always between 0 and 12
         self.uv_statement = "UV index is dangerously high right now. Cover up. Stay indoors."
       end
     end
