@@ -136,20 +136,26 @@ class Forecast < ActiveRecord::Base
       if very_hot?
         if humid?
           self.now_statement = "hot and gross! Kind of like a wet gym sock left out in a hamper."
-        else
+        elsif comfortably_humid?
+          self.now_statement = "extremely hot! But at least it's not too humid."
+        else 
           self.now_statement = "pretty darn hot, but at least it's dry heat!"
         end
       elsif reasonably_hot?
         if humid?
           self.now_statement = "hot and gross! Consider a move to Antarctica."
+        elsif comfortably_humid?
+          self.now_statement = "eek pretty hot! But at least it's not too humid."
         else
-          self.now_statement = "pretty darn hot, but not too humid!"
+          self.now_statement = "pretty darn hot, with dry heat!"
         end
       elsif warm?
         if humid?
           self.now_statement = "supposedly comfortable temperature-wise, but it is very humid!"
+        elsif comfortably_humid?
+          self.now_statement = "comfortable temperature. Goldilocks approves of the weather today."
         else
-          self.now_statement = "not too hot, not too humid! Every once in a while, you can stop bitching about the weather."
+          self.now_statement = "not too hot, maybe a bit dry! Every once in a while, just stop bitching about the weather."
         end
       elsif comfortable?
         self.now_statement = "not exactly warm. Layer up."
@@ -161,7 +167,18 @@ class Forecast < ActiveRecord::Base
 
   def humid?
     humidity_now = self.humidity[0].to_i
-    humidity_now >= 65
+    humidity_now >= 60
+  end
+
+  def comfortably_humid?
+    humidity_now = self.humidity[0].to_i
+    humidity_now.between?(43,59)
+  end
+
+
+  def dry_air?
+    humidity_now = self.humidity[0].to_i
+    humidity_now <= 42
   end
 
   def very_hot?
@@ -216,8 +233,8 @@ class Forecast < ActiveRecord::Base
     self.first_discrepancy = self.discrepancy_index_array.first 
     self.all_hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["pretty"]}
     self.discrepancy_index = self.all_hours[self.first_discrepancy] 
-    self.max_time = self.all_hours[self.first_discrepancy].split(" ")[0]+self.all_hours[self.first_discrepancy].split(" ")[1] # 11am
-    if Time.now.to_a[3] == self.all_hours[self.first_discrepancy].split(" ")[5].split(",").join("").to_i
+    self.max_time = self.discrepancy_index.split(" ")[0]+self.all_hours[self.first_discrepancy].split(" ")[1] # 11am
+    if Time.now.to_a[3] == self.discrepancy_index.split(" ")[5].split(",").join("").to_i
       self.max_day = "today"
     else 
       self.max_day = "tomorrow"
