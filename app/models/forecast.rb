@@ -116,8 +116,8 @@ class Forecast < ActiveRecord::Base
   def set_now_statement
     temperature_now = self.temperature[0].to_i # in F
     humidity_now = self.humidity[0].to_i # in %
-    time_now = Time.now.to_a[2] # returns ONLY hour in 24 hour format
-    if time_now.between?(0,5) || time_now.between?(23,24)
+    # time_now = Time.now.to_a[2] # returns ONLY hour in 24 hour format
+    if sleepy_time?
       self.now_statement = "night time. Dear Lord. Don't you sleep? "
     else
       if temperature_now >= 85 
@@ -139,6 +139,11 @@ class Forecast < ActiveRecord::Base
       end 
     end 
   end 
+
+  def sleepy_time?
+    time_now = Time.now.to_a[2]
+    time_now.between?(23,24) || time_now.between?(0,5) 
+  end
 
   def set_conditions_icon # shows an icon for current conditions, such as clear, overcast etc
     self.conditions_icon = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["icon_url"]}.first
@@ -189,7 +194,7 @@ class Forecast < ActiveRecord::Base
     temperature_now = self.temperature[0].to_i # in F
     humidity_now = self.humidity[0].to_i # in %
     status_now = self.status[0]
-    if Time.now.to_a[2].between?(5,19) # will only show up if it is daytime
+    if daytime? # will only show up if it is daytime
       if temperature_now >= 65 
         if ( status_now == "Clear" || status_now == "Mostly Sunny" || status_now == "Sunny" || status_now == "Mostly Clear")
           self.t_shirt_statement = "It is T-shirt weather for most people."
@@ -204,6 +209,10 @@ class Forecast < ActiveRecord::Base
         self.t_shirt_statement = "LAYERS! Lots of them."
       end
     end
+  end
+
+  def daytime?
+    Time.now.to_a[2].between?(5,19)
   end
 
 end # ends class
