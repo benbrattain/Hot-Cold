@@ -182,22 +182,22 @@ class Forecast < ActiveRecord::Base
   end
 
   def very_hot?
-    temperature_now = self.temperature[0].to_i
+    temperature_now = self.heat_index[0].to_i
     temperature_now >= 90
   end
 
   def reasonably_hot?
-    temperature_now = self.temperature[0].to_i
+    temperature_now = self.heat_index[0].to_i
     temperature_now >= 80 && temperature_now <= 89
   end
  
   def warm? 
-    temperature_now = self.temperature[0].to_i
+    temperature_now = self.heat_index[0].to_i
     temperature_now >= 60 && temperature_now <= 79
   end
 
   def comfortable?
-    temperature_now = self.temperature[0].to_i
+    temperature_now = self.heat_index[0].to_i
     temperature_now >= 42 && temperature_now <= 59
   end
 
@@ -245,11 +245,15 @@ class Forecast < ActiveRecord::Base
     self.find_discrepancy_max
     self.find_discrepancy_index
     if self.find_discrepancy_max >= 7
-      self.discrepancy_statement = "Wunderground.com said it will be nice out, but it will feel MUCH hotter than what they said starting around #{self.max_time} #{self.max_day}."
+      self.discrepancy_statement = 
+      "Wunderground.com said it will be nice out, but it will feel MUCH hotter than what they said 
+      starting around #{self.max_time} #{self.max_day}."
     elsif self.find_discrepancy_max.between?(4,6)
-      self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted starting around #{self.max_time} #{self.max_day}."
+      self.discrepancy_statement = 
+      "Watch out! It will feel much hotter than forecasted starting around #{self.max_time} #{self.max_day}."
     else
-      self.discrepancy_statement = "In the next 36 hours, it will feel pretty close to what meteorologists are saying "
+      self.discrepancy_statement = 
+      "In the next 36 hours, it will feel pretty close to what meteorologists are saying."
     end
   end
 
