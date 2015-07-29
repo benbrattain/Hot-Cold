@@ -254,7 +254,7 @@ class Forecast < ActiveRecord::Base
         elsif temperature_now >= 68 && (status_now == "Partly Cloudy" || status_now == "Mostly Cloudy" || status_now == "Cloudy")
             self.t_shirt_statement = "Probably T-shirt weather: a bit overcast."
         else temperature_now >= 73 && (status_now == "Scattered Thunderstorms" || status_now == "Isolated Thunderstorms")
-          self.t_shirt_statement = "It would be T-shirt weather, but it's really rain jacket weather."
+          self.t_shirt_statement = "It would be T-shirt weather, but you also need a rain jacket / umbrella."
         end
       elsif temperature_now >= 42
         self.t_shirt_statement = "Not exactly T-shirt weather."

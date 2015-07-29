@@ -26,9 +26,9 @@ class HeatIndexCalculator
   def run_heat_index_calc(simple_heat_index, full_heat_index, temp, humidity)
     if hot?(simple_heat_index, temp)
       if hot_and_dry?(temp, humidity) 
-        self.heat_index << (full_heat_index-dry_and_hot_adjustment).to_i
+        self.heat_index << (full_heat_index-dry_and_hot_adjustment(temp, humidity)).to_i
       elsif hot_and_humid?(temp, humidity) 
-        self.heat_index << (full_heat_index-humid_and_hot_adjustment).to_i
+        self.heat_index << (full_heat_index-humid_and_hot_adjustment(temp, humidity)).to_i
       else 
         self.heat_index << full_heat_index
       end
