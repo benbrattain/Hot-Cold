@@ -117,10 +117,13 @@ class Forecast < ActiveRecord::Base
     self.wind_chill = wind_chill_calculator.calculate
   end 
 
+  def set_time              
+    @time = Time.now.to_a[2]
+  end
+
   def set_now_statement
     temperature_now = self.temperature[0].to_i # in F
     humidity_now = self.humidity[0].to_i # in %
-    # time_now = Time.now.to_a[2] # returns ONLY hour in 24 hour format
     if sleepy_time?
       self.now_statement = "night time. Dear Lord. Don't you sleep? "
     else
@@ -176,8 +179,8 @@ class Forecast < ActiveRecord::Base
   end
 
   def sleepy_time?
-    time_now = Time.now.to_a[2]
-    time_now.between?(23,24) || time_now.between?(0,5) 
+    set_time
+    @time.between?(23,24) || @time.between?(0,5) 
   end
 
   def set_conditions_icon # shows an icon for current conditions, such as clear, overcast etc
@@ -247,7 +250,8 @@ class Forecast < ActiveRecord::Base
   end
 
   def daytime?
-    Time.now.to_a[2].between?(6,19)
+    set_time
+    @time.between?(6,19)
   end
 
   def collect_uv_index # returns an array of 36 elements
