@@ -67,14 +67,16 @@ class Forecast < ActiveRecord::Base
     unformatted_hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["hour"]}
     self.hours = []
     unformatted_hours.each do |hour|
-      if hour.to_i.between?(13,23)
-        hour = hour.to_i - 12
-      elsif hour.to_i == 0
-        hour = 12
+      if hour.to_i == 0 
+        hour = "midnight"
+      elsif hour.to_i.between?(13,23)
+        hour = "#{hour.to_i - 12}pm"
+      elsif hour.to_i == 12
+        hour = "noon"
       else
-        hour = hour.to_i
+        hour = "#{hour.to_i}am"
       end
-      self.hours << hour.to_s
+      self.hours << hour
     end
   end
 
@@ -136,20 +138,26 @@ class Forecast < ActiveRecord::Base
       if very_hot?
         if humid?
           self.now_statement = "hot and gross! Kind of like a wet gym sock left out in a hamper."
-        else
-          self.now_statement = "pretty darn hot!"
+        elsif comfortably_humid?
+          self.now_statement = "extremely hot! But at least it's not too humid."
+        else 
+          self.now_statement = "pretty darn hot, but at least it's dry heat!"
         end
       elsif reasonably_hot?
         if humid?
           self.now_statement = "hot and gross! Consider a move to Antarctica."
+        elsif comfortably_humid?
+          self.now_statement = "eek pretty hot! But at least it's not too humid."
         else
-          self.now_statement = "pretty darn hot!"
+          self.now_statement = "pretty darn hot, with dry heat!"
         end
       elsif warm?
         if humid?
           self.now_statement = "supposedly comfortable temperature-wise, but it is very humid!"
+        elsif comfortably_humid?
+          self.now_statement = "comfortable temperature. Goldilocks approves of the weather today."
         else
-          self.now_statement = "not too hot, not too humid! Every once in a while, you can stop bitching about the weather."
+          self.now_statement = "not too hot, maybe a bit dry! Every once in a while, just stop bitching about the weather."
         end
       elsif comfortable?
         self.now_statement = "not exactly warm. Layer up."
@@ -161,26 +169,37 @@ class Forecast < ActiveRecord::Base
 
   def humid?
     humidity_now = self.humidity[0].to_i
-    humidity_now >= 65
+    humidity_now >= 60
+  end
+
+  def comfortably_humid?
+    humidity_now = self.humidity[0].to_i
+    humidity_now.between?(43,59)
+  end
+
+
+  def dry_air?
+    humidity_now = self.humidity[0].to_i
+    humidity_now <= 42
   end
 
   def very_hot?
-    temperature_now = self.temperature[0].to_i
+    temperature_now = self.heat_index[0].to_i
     temperature_now >= 90
   end
 
   def reasonably_hot?
-    temperature_now = self.temperature[0].to_i
+    temperature_now = self.heat_index[0].to_i
     temperature_now >= 80 && temperature_now <= 89
   end
  
   def warm? 
-    temperature_now = self.temperature[0].to_i
+    temperature_now = self.heat_index[0].to_i
     temperature_now >= 60 && temperature_now <= 79
   end
 
   def comfortable?
-    temperature_now = self.temperature[0].to_i
+    temperature_now = self.heat_index[0].to_i
     temperature_now >= 42 && temperature_now <= 59
   end
 
@@ -216,52 +235,63 @@ class Forecast < ActiveRecord::Base
     self.first_discrepancy = self.discrepancy_index_array.first 
     self.all_hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["pretty"]}
     self.discrepancy_index = self.all_hours[self.first_discrepancy] 
-    # civil: "11:00 AM" -- 11am
-    # puts Time.now.to_a[3] # gets date 29
-    self.max_time = self.all_hours[self.first_discrepancy].split(" ")[0]+self.all_hours[self.first_discrepancy].split(" ")[1] # 11am
-    if Time.now.to_a[3] == self.all_hours[self.first_discrepancy].split(" ")[5].split(",").join("").to_i
+    self.max_time = self.discrepancy_index.split(" ")[0]+self.all_hours[self.first_discrepancy].split(" ")[1] # 11am
+    if Time.now.to_a[3] == self.discrepancy_index.split(" ")[5].split(",").join("").to_i
       self.max_day = "today"
     else 
       self.max_day = "tomorrow"
-    end # puts "11:00 AM EDT on July 29, 2015".split(" ")[5].split(",").join("").to_i 29
-    # Time.now.to_a[3] == "11:00 AM EDT on July 29, 2015".split(" ")[5].split(",").join("").to_i
-    # binding.pry
+    end
   end
 
   def discrepancy?
     self.find_discrepancy_max
     self.find_discrepancy_index
     if self.find_discrepancy_max >= 7
-      self.discrepancy_statement = "Wunderground.com said it will be nice out, but it will feel MUCH hotter than what they said starting around #{self.max_time} #{self.max_day}."
+      self.discrepancy_statement = 
+      "It will feel MUCH hotter than what meteorologists said starting around #{self.max_time} #{self.max_day}."
     elsif self.find_discrepancy_max.between?(4,6)
-      self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted starting around #{self.max_time} #{self.max_day}."
+      self.discrepancy_statement = 
+      "Watch out! It will feel much hotter than forecasted starting around #{self.max_time} #{self.max_day}."
     else
-      self.discrepancy_statement = "It will feel pretty close to what meteorologists are saying in the next 36 hours."
+      self.discrepancy_statement = 
+      "In the next 36 hours, it will feel pretty close to what meteorologists are saying."
     end
   end
 
-  def t_shirt_weather?
-    # Sunny above 65 F 
-    # Cloudy above 68 F 
-    # Rainy above 73 F
-    temperature_now = self.temperature[0].to_i # in F
+  def t_shirt_weather? # Sunny above 65 F; Cloudy above 68 F; Rainy above 73 F
+    temperature_now = self.heat_index[0].to_i # in F
     humidity_now = self.humidity[0].to_i # in %
     status_now = self.status[0]
     if daytime? # will only show up if it is daytime
       if temperature_now >= 65 
-        if ( status_now == "Clear" || status_now == "Mostly Sunny" || status_now == "Sunny" || status_now == "Mostly Clear")
+        if clear_or_sunny?
           self.t_shirt_statement = "It is T-shirt weather for most people."
-        elsif temperature_now >= 68 && (status_now == "Partly Cloudy" || status_now == "Mostly Cloudy" || status_now == "Cloudy")
-            self.t_shirt_statement = "Probably T-shirt weather: a bit overcast."
-        else temperature_now >= 73 && (status_now == "Scattered Thunderstorms" || status_now == "Isolated Thunderstorms")
-          self.t_shirt_statement = "It would be T-shirt weather, but it's really rain jacket weather."
+        elsif temperature_now >= 68 && cloudy?
+            self.t_shirt_statement = "T-shirt weather, but a bit overcast."
+        else temperature_now >= 73 && thunder?
+          self.t_shirt_statement = "T-shirt weather, but don't forget your umbrella."
         end
       elsif temperature_now >= 42
-        self.t_shirt_statement = "Not exactly T-shirt weather."
+        self.t_shirt_statement = "Not exactly T-shirt weather, huh?"
       else 
         self.t_shirt_statement = "LAYERS! Lots of them."
       end
     end
+  end
+
+  def thunder? # "Scattered Thunderstorms", "Isolated Thunderstorms", "Thunderstorms", "Heavy Thunderstorms"
+    status_now = self.status[0]
+    status_now.include?("Thunder") 
+  end
+
+  def clear_or_sunny?
+    status_now = self.status[0]
+    status_now == "Clear" || status_now == "Mostly Sunny" || status_now == "Sunny" || status_now == "Mostly Clear"
+  end
+
+  def cloudy?
+    status_now = self.status[0]
+    status_now == "Partly Cloudy" || status_now == "Mostly Cloudy" || status_now == "Cloudy"
   end
 
   def daytime?
