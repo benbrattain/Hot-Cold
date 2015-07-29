@@ -1,23 +1,23 @@
 class Forecast < ActiveRecord::Base
 
   attr_accessor :zip_output, 
-              :weather_output, 
-              :url, 
-              :city_slug, 
-              :temperature, 
-              :hours, 
-              :humidity, 
-              :heat_index, 
-              :wind_speed, 
-              :wind_chill,
-              :now_statement,
-              :conditions_icon,
-              :discrepancy,
-              :discrepancy_statement,
-              :max_discrepancy_index,
-              :max_discrepancy_time_of_day,
-              :status,
-              :t_shirt_statement
+                :weather_output, 
+                :url, 
+                :city_slug, 
+                :temperature, 
+                :hours, 
+                :humidity, 
+                :heat_index, 
+                :wind_speed, 
+                :wind_chill,
+                :now_statement,
+                :conditions_icon,
+                :discrepancy,
+                :discrepancy_statement,
+                :max_discrepancy_index,
+                :max_discrepancy_time_of_day,
+                :status,
+                :t_shirt_statement
 
   def store_location
     self.store_city
@@ -122,7 +122,7 @@ class Forecast < ActiveRecord::Base
     else
       if temperature_now >= 85 
         if humidity_now >= 60
-          self.now_statement = "hot and gross! Move to Antarctica now!"
+          self.now_statement = "hot and gross! Consider a move to Antarctica."
         else
           self.now_statement = "pretty darn hot!"
         end
@@ -174,7 +174,7 @@ class Forecast < ActiveRecord::Base
     self.discrepancy_max
     self.find_max_discrepancy_time_of_day
     if self.discrepancy.max >= 7
-        self.discrepancy_statement = "Wunderground.com said it will be nice out. They are wrong. It will feel MUCH hotter than what they said on #{self.max_discrepancy_time_of_day}."
+        self.discrepancy_statement = "Wunderground.com said it will be nice out, but it will feel MUCH hotter than what they said on #{self.max_discrepancy_time_of_day}."
     elsif self.discrepancy.max.between?(4,6)
       self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted on #{self.max_discrepancy_time_of_day}."
     else
@@ -183,24 +183,26 @@ class Forecast < ActiveRecord::Base
   end
 
   def t_shirt_weather?
-    # Sunny Above 65 F 
-    # Cloudy/Windy Above 68 F 
-    # Rainy Above 73 F
+    # Sunny above 65 F 
+    # Cloudy above 68 F 
+    # Rainy above 73 F
     temperature_now = self.temperature[0].to_i # in F
     humidity_now = self.humidity[0].to_i # in %
     status_now = self.status[0]
-    if temperature_now >= 65 
-      if ( status_now == "Clear" || status_now == "Mostly Sunny" || status_now == "Sunny" || status_now == "Mostly Clear")
-        self.t_shirt_statement = "It is T-shirt weather for most humans."
-      elsif temperature_now >= 68 && (status_now == "Partly Cloudy" || status_now == "Mostly Cloudy" || status_now == "Cloudy")
-        self.t_shirt_statement = "Probably T-shirt weather. A bit overcast."
-      else temperature_now >= 73 && (status_now == "Scattered Thunderstorms" || status_now == "Isolated Thunderstorms")
-        self.t_shirt_statement = "T-shirt weather, but bring a rain jacket."
+    if Time.now.to_a[2].between?(5,19) # will only show up if it is daytime
+      if temperature_now >= 65 
+        if ( status_now == "Clear" || status_now == "Mostly Sunny" || status_now == "Sunny" || status_now == "Mostly Clear")
+          self.t_shirt_statement = "It is T-shirt weather for most people."
+        elsif temperature_now >= 68 && (status_now == "Partly Cloudy" || status_now == "Mostly Cloudy" || status_now == "Cloudy")
+            self.t_shirt_statement = "Probably T-shirt weather: a bit overcast."
+        else temperature_now >= 73 && (status_now == "Scattered Thunderstorms" || status_now == "Isolated Thunderstorms")
+          self.t_shirt_statement = "T-shirt weather, but bring a rain jacket."
+        end
+      elsif temperature_now >= 42
+        self.t_shirt_statement = "Not exactly T-shirt weather."
+      else 
+        self.t_shirt_statement = "LAYERS! Lots of them."
       end
-    elsif temperature_now >= 42
-      self.t_shirt_statement = "Not exactly T-shirt weather."
-    else 
-      self.t_shirt_statement = "LAYERS! Wear them."
     end
   end
 

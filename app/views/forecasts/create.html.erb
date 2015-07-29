@@ -117,18 +117,14 @@ else
     <h2><%= @forecast.discrepancy_statement %></h2>
     <h2><%= @forecast.t_shirt_statement %></h2>
 </div>
+
 <br>
 <h4 class = "form"><%= form_for @forecast, url: forecasts_path, method: "POST" do |f| %>
-
-
-<center><h4 align="right"><%= form_for @forecast, url: forecasts_path, method: "POST" do |f| %>
-  <%= f.label :zipcode %>
-  <%= f.text_field :zipcode %>
-  <%= f.submit "Get another forecast!"%>
-<% end %>
+    <h4 align="right">
+    <%= f.text_field :zipcode %>
+    <%= f.submit "Get another forecast!" %>
+    <% end %>
 </h4>
 
-<!-- <center><h2>Humidity Forecast</h2></center>
-<center> <%= line_chart @data_humidity, @options_humidity %> </center>
-<center><h2>Wind Chill Forecast</h2></center>
-<center> <%= line_chart @data_wind_chill, @options_wind_chill %> </center> -->
+<%= link_to "Home", root_path, class: 'button' %>
+
