@@ -223,16 +223,18 @@ class Forecast < ActiveRecord::Base
     self.uv_index = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["uvi"]}
   end
 
+  # https://en.wikipedia.org/wiki/Ultraviolet_index
   def need_suncreen? # no message if index is 0,1,2 or if it's night time
-    uv_now = self.uv_index[0].to_it
+    uv_now = self.uv_index[0].to_i
     if daytime? 
-      if uv_now.between?(3,5)
+      case uv_now
+      when 3..5
         self.uv_statement = "UV index is moderate, but we recommend sunscreen."
-      elsif uv_now.between?(6,7)
+      when 6..7
         self.uv_statement = "UV index is pretty high. Grab your trusty SPF 30+."
-      elsif uv_now.between?(8,10)
+      when 8..10
         self.uv_statement = "UV index is really high. Cover up."
-      else uv_now.between?(11,12)
+      when 11..12
         self.uv_statement = "UV index is dangerously high right now. Cover up. Stay indoors."
       end
     end
