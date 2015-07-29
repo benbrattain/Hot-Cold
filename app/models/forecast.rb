@@ -36,28 +36,28 @@ class Forecast < ActiveRecord::Base
      self.zip_output != nil
   end
 
-  def store_city
+  def store_city 
     self.city = self.zip_output[:city]
   end
 
-  def store_state
+  def store_state 
     self.state = self.zip_output[:state_code]
   end
 
-  def city_to_slug
+  def city_to_slug # for use in json url
     self.city_slug = self.city.downcase.gsub(" ", "_")
   end
 
-  def to_url
+  def to_url # generates url for the json object with all forecast data
     api = ENV["weather_api"]
     self.url = "http://api.wunderground.com/api/#{api}/hourly/q/#{self.state}/#{self.city_slug}.json"
   end
 
-  def scrape_json # creates a json object using appropriate url
+  def scrape_json # creates a json using generated url
     @api_response = open(self.url).read
   end
   
-  def collect_hours # returns an array of 36 elements
+  def collect_hours 
     unformatted_hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["hour"]}
     self.hours = []
     unformatted_hours.each do |hour|
@@ -183,10 +183,11 @@ class Forecast < ActiveRecord::Base
     @time.between?(23,24) || @time.between?(0,5) 
   end
 
-  def set_conditions_icon # shows an icon for current conditions, such as clear, overcast etc
+  def set_conditions_icon # shows an icon for current conditions, such as sunny, overcast, thunderstorms, etc
     self.conditions_icon = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["icon_url"]}.first
   end
 
+  # discrepancy methods
   def calculate_discrepancy
     self.discrepancy = []
     i = 0
@@ -195,6 +196,7 @@ class Forecast < ActiveRecord::Base
       self.discrepancy << num
       i += 1
     end
+    self.discrepancy
   end
 
   def discrepancy_max
@@ -224,6 +226,7 @@ class Forecast < ActiveRecord::Base
       self.discrepancy_statement = "It will feel pretty close to what meteorologists are saying in the next 36 hours."
     end
   end
+  # discrepancy methods end
 
   def t_shirt_weather?
     # Sunny above 65 F 
