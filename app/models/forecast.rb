@@ -72,19 +72,19 @@ class Forecast < ActiveRecord::Base
     end
   end
 
-  def collect_humidity # returns an array of 36 elements
+  def collect_humidity 
     self.humidity = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["humidity"]}
   end
 
-  def collect_temperature # returns an array of 36 elements
+  def collect_temperature 
     self.temperature = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["temp"]["english"]}
   end
 
-  def collect_wind_speed # returns an array of 36 elements
+  def collect_wind_speed 
     self.wind_speed = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["wspd"]["english"]}
   end
 
-  def collect_status # returns an array of 36 elements
+  def collect_status 
     self.status = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["wx"]}
   end
 
@@ -124,25 +124,56 @@ class Forecast < ActiveRecord::Base
     if sleepy_time?
       self.now_statement = "night time. Dear Lord. Don't you sleep? "
     else
-      if temperature_now >= 80
-        if humidity_now >= 60
+      if very_hot?
+        if humid?
+          self.now_statement = "hot and gross! Kind of like a wet gym sock left out in a hamper."
+        else
+          self.now_statement = "pretty darn hot! Sort of like a pizza oven."
+        end
+      elsif reasonably_hot?
+        if humid?
           self.now_statement = "hot and gross! Consider a move to Antarctica."
         else
           self.now_statement = "pretty darn hot!"
         end
-      elsif temperature_now.between?(65,79)
-        if humidity_now >= 60
-          self.now_statement = "not that hot, but very humid!"
+      elsif warm?
+        if humid?
+          self.now_statement = "supposedly comfortable temperature-wise, but it is very humid!"
         else
           self.now_statement = "not too hot, not too humid! Every once in a while, you can stop bitching about the weather."
         end
-      elsif temperature_now.between?(42,64)
-        self.now_statement = "not too warm. Layer up."
+      elsif comfortable?
+        self.now_statement = "not exactly warm. Layer up."
       else 
         self.now_statement = "COLD. I hope you are a penguin."
       end 
     end 
   end 
+
+  def humid?
+    humidity_now = self.humidity[0].to_i
+    humidity_now >= 65
+  end
+
+  def very_hot?
+    temperature_now = self.temperature[0].to_i
+    temperature_now >= 90
+  end
+
+  def reasonably_hot?
+    temperature_now = self.temperature[0].to_i
+    temperature_now >= 80 && temperature_now <= 89
+  end
+ 
+  def warm? 
+    temperature_now = self.temperature[0].to_i
+    temperature_now >= 60 && temperature_now <= 79
+  end
+
+  def comfortable?
+    temperature_now = self.temperature[0].to_i
+    temperature_now >= 42 && temperature_now <= 59
+  end
 
   def sleepy_time?
     time_now = Time.now.to_a[2]
