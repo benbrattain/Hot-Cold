@@ -232,7 +232,7 @@ class Forecast < ActiveRecord::Base
     self.find_discrepancy_max
     self.find_discrepancy_index
     if self.find_discrepancy_max >= 7
-      self.discrepancy_statement = "Wunderground.com said it will be nice out, but it will feel MUCH hotter than what they said starting around #{self.discrepancy_index}."
+      self.discrepancy_statement = "Wunderground.com said it will be nice out, but it will feel MUCH hotter than what they said starting around #{self.max_time} #{self.max_day}."
     elsif self.find_discrepancy_max.between?(4,6)
       self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted starting around #{self.max_time} #{self.max_day}."
     else
