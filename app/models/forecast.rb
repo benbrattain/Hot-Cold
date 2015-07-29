@@ -17,7 +17,9 @@ class Forecast < ActiveRecord::Base
                 :max_discrepancy_index,
                 :max_discrepancy_time_of_day,
                 :status,
-                :t_shirt_statement
+                :t_shirt_statement,
+                :uv_index,
+                :uv_statement
 
   def store_location
     self.store_city
@@ -82,7 +84,7 @@ class Forecast < ActiveRecord::Base
     self.wind_speed = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["wspd"]["english"]}
   end
 
-  def collect_status
+  def collect_status # returns an array of 36 elements
     self.status = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["wx"]}
   end
 
@@ -95,10 +97,12 @@ class Forecast < ActiveRecord::Base
     self.collect_wind_speed
     self.collect_wind_chill
     self.collect_status
+    self.collect_uv_index
     self.set_now_statement
     self.set_conditions_icon
     self.discrepancy?
     self.t_shirt_weather?
+    self.need_suncreen?
   end
 
   # http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
@@ -170,7 +174,7 @@ class Forecast < ActiveRecord::Base
   end
 
   def find_max_discrepancy_time_of_day
-    find_discrepancy_index # this should return index we are looking for
+    find_discrepancy_index 
     weekday_name_array = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["weekday_name_night_unlang"]}
     self.max_discrepancy_time_of_day = weekday_name_array[self.max_discrepancy_index]
   end
@@ -212,7 +216,26 @@ class Forecast < ActiveRecord::Base
   end
 
   def daytime?
-    Time.now.to_a[2].between?(5,19)
+    Time.now.to_a[2].between?(6,19)
+  end
+
+  def collect_uv_index # returns an array of 36 elements
+    self.uv_index = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["uvi"]}
+  end
+
+  def need_suncreen? # no message if index is 0,1,2 or if it's night time
+    uv_now = self.uv_index[0].to_it
+    if daytime? 
+      if uv_now.between?(3,5)
+        self.uv_statement = "UV index is moderate, but we recommend sunscreen."
+      elsif uv_now.between?(6,7)
+        self.uv_statement = "UV index is pretty high. Grab your trusty SPF 30+."
+      elsif uv_now.between?(8,10)
+        self.uv_statement = "UV index is really high. Cover up."
+      else uv_now.between?(11,12)
+        self.uv_statement = "UV index is dangerously high right now. Cover up. Stay indoors."
+      end
+    end
   end
 
 end # ends class
