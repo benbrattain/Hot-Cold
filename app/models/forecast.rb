@@ -13,13 +13,17 @@ class Forecast < ActiveRecord::Base
                 :now_statement,
                 :conditions_icon,
                 :discrepancy,
+                :discrepancy_index,
+                :max_discrepancy,
                 :discrepancy_statement,
-                :max_discrepancy_index,
-                :max_discrepancy_time_of_day,
+                :discrepancy_index_array,
+                :first_discrepancy,
+                # :max_discrepancy_index,
                 :status,
                 :t_shirt_statement,
                 :uv_index,
-                :uv_statement
+                :uv_statement,
+                :all_hours
 
   def store_location
     self.store_city
@@ -199,34 +203,31 @@ class Forecast < ActiveRecord::Base
     self.discrepancy # returns correct array
   end
 
-  def discrepancy_max
+  def find_discrepancy_max
     self.calculate_discrepancy
-    self.discrepancy = self.discrepancy.max
+    self.max_discrepancy = self.discrepancy.max # returns correct max discrepancy from the array
   end
 
   def find_discrepancy_index
-    calculate_discrepancy
-    self.max_discrepancy_index = self.discrepancy.find_index(self.discrepancy.max)
-  end
-
-  def find_max_discrepancy_time_of_day
-    find_discrepancy_index 
-    weekday_name_array = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["weekday_name_night_unlang"]}
-    self.max_discrepancy_time_of_day = weekday_name_array[self.max_discrepancy_index]
+    self.find_discrepancy_max
+    self.discrepancy_index_array = self.discrepancy.each_index.select{|x| self.discrepancy[x] == self.discrepancy.max} # returns array of correct indices
+    self.first_discrepancy = self.discrepancy_index_array.first 
+    self.all_hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["pretty"]}
+    self.discrepancy_index = self.all_hours[self.first_discrepancy] # finds first value
+    # binding.pry
   end
 
   def discrepancy?
-    self.discrepancy_max
-    self.find_max_discrepancy_time_of_day
-    if self.discrepancy.max >= 7
-        self.discrepancy_statement = "Wunderground.com said it will be nice out, but it will feel MUCH hotter than what they said on #{self.max_discrepancy_time_of_day}."
-    elsif self.discrepancy.max.between?(4,6)
-      self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted on #{self.max_discrepancy_time_of_day}."
+    self.find_discrepancy_max
+    self.find_discrepancy_index
+    if self.find_discrepancy_max >= 7
+      self.discrepancy_statement = "Wunderground.com said it will be nice out, but it will feel MUCH hotter than what they said starting around #{self.discrepancy_index}."
+    elsif self.find_discrepancy_max.between?(4,6)
+      self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted starting around #{self.discrepancy_index}."
     else
       self.discrepancy_statement = "It will feel pretty close to what meteorologists are saying in the next 36 hours."
     end
   end
-  # discrepancy methods end
 
   def t_shirt_weather?
     # Sunny above 65 F 
@@ -242,7 +243,7 @@ class Forecast < ActiveRecord::Base
         elsif temperature_now >= 68 && (status_now == "Partly Cloudy" || status_now == "Mostly Cloudy" || status_now == "Cloudy")
             self.t_shirt_statement = "Probably T-shirt weather: a bit overcast."
         else temperature_now >= 73 && (status_now == "Scattered Thunderstorms" || status_now == "Isolated Thunderstorms")
-          self.t_shirt_statement = "T-shirt weather, but bring a rain jacket."
+          self.t_shirt_statement = "It would be T-shirt weather, but it's really rain jacket weather."
         end
       elsif temperature_now >= 42
         self.t_shirt_statement = "Not exactly T-shirt weather."

@@ -1,4 +1,4 @@
-<center><h1>Right now in <%=@forecast.city %>, <%= @forecast.state %> (<%= @forecast.zipcode%>):<%= %></h1></center>
+<center><h1>Right now in <%=@forecast.city %>, <%= @forecast.state %> (<%= @forecast.zipcode%>)<%= %></h1></center>
 <center><h1>it is <%=@forecast.now_statement%> </h1></center>
 <!-- <center><h1>From [forecast start time] to [forecast end time]</h1></center>
 <center><h1>It will be...<%= %></h1></center>
@@ -117,7 +117,6 @@ else
     <h2><%= @forecast.discrepancy_statement %></h2>
     <h2><%= @forecast.t_shirt_statement %></h2>
     <h2><%= @forecast.uv_statement %></h2>
-    <h2><%= @forecast.discrepancy %></h2>
 </div>
 
 <br>
