@@ -137,13 +137,13 @@ class Forecast < ActiveRecord::Base
         if humid?
           self.now_statement = "hot and gross! Kind of like a wet gym sock left out in a hamper."
         else
-          self.now_statement = "pretty darn hot!"
+          self.now_statement = "pretty darn hot, but at least it's dry heat!"
         end
       elsif reasonably_hot?
         if humid?
           self.now_statement = "hot and gross! Consider a move to Antarctica."
         else
-          self.now_statement = "pretty darn hot!"
+          self.now_statement = "pretty darn hot, but not too humid!"
         end
       elsif warm?
         if humid?
@@ -236,28 +236,40 @@ class Forecast < ActiveRecord::Base
     end
   end
 
-  def t_shirt_weather?
-    # Sunny above 65 F 
-    # Cloudy above 68 F 
-    # Rainy above 73 F
+  def t_shirt_weather? # Sunny above 65 F; Cloudy above 68 F; Rainy above 73 F
     temperature_now = self.temperature[0].to_i # in F
     humidity_now = self.humidity[0].to_i # in %
     status_now = self.status[0]
     if daytime? # will only show up if it is daytime
       if temperature_now >= 65 
-        if ( status_now == "Clear" || status_now == "Mostly Sunny" || status_now == "Sunny" || status_now == "Mostly Clear")
+        if clear_or_sunny?
           self.t_shirt_statement = "It is T-shirt weather for most people."
-        elsif temperature_now >= 68 && (status_now == "Partly Cloudy" || status_now == "Mostly Cloudy" || status_now == "Cloudy")
-            self.t_shirt_statement = "Probably T-shirt weather: a bit overcast."
-        else temperature_now >= 73 && (status_now.include?("Thunder") || status_now == "Scattered Thunderstorms" || status_now == "Isolated Thunderstorms" || status_now == "Thunderstorms" || status_now == "Heavy Thunderstorms")
-          self.t_shirt_statement = "It is T-shirt weather, but you also need a rain jacket / umbrella."
+        elsif temperature_now >= 68 && cloudy?
+            self.t_shirt_statement = "T-shirt weather, but a bit overcast."
+        else temperature_now >= 73 && thunder?
+          self.t_shirt_statement = "T-shirt weather, but don't forget your umbrella."
         end
       elsif temperature_now >= 42
-        self.t_shirt_statement = "Not exactly T-shirt weather."
+        self.t_shirt_statement = "Not exactly T-shirt weather, huh?"
       else 
         self.t_shirt_statement = "LAYERS! Lots of them."
       end
     end
+  end
+
+  def thunder? # "Scattered Thunderstorms", "Isolated Thunderstorms", "Thunderstorms", "Heavy Thunderstorms"
+    status_now = self.status[0]
+    status_now.include?("Thunder") 
+  end
+
+  def clear_or_sunny?
+    status_now = self.status[0]
+    status_now == "Clear" || status_now == "Mostly Sunny" || status_now == "Sunny" || status_now == "Mostly Clear"
+  end
+
+  def cloudy?
+    status_now = self.status[0]
+    status_now == "Partly Cloudy" || status_now == "Mostly Cloudy" || status_now == "Cloudy"
   end
 
   def daytime?
