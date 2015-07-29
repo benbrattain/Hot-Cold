@@ -232,12 +232,12 @@ class Forecast < ActiveRecord::Base
     elsif self.find_discrepancy_max.between?(4,6)
       self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted starting around #{self.max_time} #{self.max_day}."
     else
-      self.discrepancy_statement = "It will feel pretty close to what meteorologists are saying in the next 36 hours."
+      self.discrepancy_statement = "In the next 36 hours, it will feel pretty close to what meteorologists are saying "
     end
   end
 
   def t_shirt_weather? # Sunny above 65 F; Cloudy above 68 F; Rainy above 73 F
-    temperature_now = self.temperature[0].to_i # in F
+    temperature_now = self.heat_index[0].to_i # in F
     humidity_now = self.humidity[0].to_i # in %
     status_now = self.status[0]
     if daytime? # will only show up if it is daytime
