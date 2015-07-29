@@ -67,14 +67,16 @@ class Forecast < ActiveRecord::Base
     unformatted_hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["hour"]}
     self.hours = []
     unformatted_hours.each do |hour|
-      if hour.to_i.between?(13,23)
-        hour = hour.to_i - 12
-      elsif hour.to_i == 0
-        hour = 12
+      if hour.to_i == 0 
+        hour = "midnight"
+      elsif hour.to_i.between?(13,23)
+        hour = "#{hour.to_i - 12}pm"
+      elsif hour.to_i == 12
+        hour = "noon"
       else
-        hour = hour.to_i
+        hour = "#{hour.to_i}am"
       end
-      self.hours << hour.to_s
+      self.hours << hour
     end
   end
 
@@ -246,8 +248,7 @@ class Forecast < ActiveRecord::Base
     self.find_discrepancy_index
     if self.find_discrepancy_max >= 7
       self.discrepancy_statement = 
-      "Wunderground.com said it will be nice out, but it will feel MUCH hotter than what they said 
-      starting around #{self.max_time} #{self.max_day}."
+      "It will feel MUCH hotter than what meteorologists said starting around #{self.max_time} #{self.max_day}."
     elsif self.find_discrepancy_max.between?(4,6)
       self.discrepancy_statement = 
       "Watch out! It will feel much hotter than forecasted starting around #{self.max_time} #{self.max_day}."
