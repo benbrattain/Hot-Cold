@@ -196,7 +196,7 @@ class Forecast < ActiveRecord::Base
       self.discrepancy << num
       i += 1
     end
-    self.discrepancy
+    self.discrepancy # returns correct array
   end
 
   def discrepancy_max
