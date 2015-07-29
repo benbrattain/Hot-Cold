@@ -2,7 +2,11 @@
 
 ## Description
 
-Add a short description of your app.
+What's the temperature like outside and what does it actually feel like? Do you need sunscreen (well, you always benefit from sunscreen) and can you get away with wearing a T-shirt? Do you need your umbrella? 
+
+Most importantly, what will it really feel like outside in the next 36 hours? Handy for planning your day and outdoors exercise.
+
+We tell you using our scientifically calculated heat index and wind chill factors, depending on the season. 
 
 ## Screenshots
 
@@ -15,11 +19,11 @@ like?
 
 ## Features
 
-Bullet point some of the key features of your app here.
+Wunderground.com API 
 
 ## Usage
 
-How do users use your app?
+Enter your U.S. zip code and we will tell you all you need to know to right now and for the next 36 hours. 
 
 ## Development/Contribution
 
@@ -33,7 +37,7 @@ actually are implementing. No pie-in-the-sky-never-gonna-happen stuff.
 
 ## Author
 
-Link to your blog, twitter, etc!
+Anna Ershova, Benjamin Brattain, Travis Emmett
 
 ## License
 
