@@ -120,13 +120,13 @@ class Forecast < ActiveRecord::Base
     if sleepy_time?
       self.now_statement = "night time. Dear Lord. Don't you sleep? "
     else
-      if temperature_now >= 85 
+      if temperature_now >= 80
         if humidity_now >= 60
           self.now_statement = "hot and gross! Consider a move to Antarctica."
         else
           self.now_statement = "pretty darn hot!"
         end
-      elsif temperature_now.between?(65,84)
+      elsif temperature_now.between?(65,79)
         if humidity_now >= 60
           self.now_statement = "not that hot, but very humid!"
         else
@@ -183,7 +183,7 @@ class Forecast < ActiveRecord::Base
     elsif self.discrepancy.max.between?(4,6)
       self.discrepancy_statement = "Watch out! It will feel much hotter than forecasted on #{self.max_discrepancy_time_of_day}."
     else
-      self.discrepancy_statement = "It will feel pretty close to what meteorologists are saying."
+      self.discrepancy_statement = "It will feel pretty close to what meteorologists are saying in the next 36 hours."
     end
   end
 
