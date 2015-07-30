@@ -72,7 +72,7 @@
 <br>
 <class = "form"><%= form_for @forecast, url: forecasts_path, method: "POST" do |f| %>
     <h4 align="right">
-    <%= f.text_field :zipcode %>
+    <%= f.text_field :zipcode, :placeholder => "zipcode" %>
     <%= f.submit "Get another forecast!" %>
     <% end %>
 </h4>

@@ -1,11 +1,10 @@
 
 <center><h1>GET YOUR (REAL) WEATHER</h1></center>
-<br>
-<center><h1>please enter your zip code:</h1></center>
+
 
 <center>
 <%= form_for(@forecast) do |f| %>
-  <%= f.text_field :zipcode %>
+  <%= f.text_field :zipcode, :placeholder => "enter_your_zipcode" %>
   <%= f.submit "Get your Forecast!" %>
 <% end %>
 </center>
