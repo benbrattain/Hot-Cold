@@ -175,7 +175,7 @@ class Forecast < ActiveRecord::Base
         end
       elsif warm?
         if humid?
-          self.now_statement = "supposedly comfortable temperature-wise, but it is very humid!"
+          self.now_statement = "it is comfortable out, but very humid!"
         elsif comfortably_humid?
           self.now_statement = "comfortable temperature. Goldilocks approves of the weather today."
         else

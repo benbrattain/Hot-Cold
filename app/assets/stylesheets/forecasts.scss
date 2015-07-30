@@ -30,13 +30,17 @@ h1 {
   
 }
 
-.dash-list {
+.red {
+  color: rgba(178,34,34,1);
+}
+
+.dash-font {
   font-size: 25px;
 }
 
 .form {
   clear: both;
-  padding-left: 30p
+  padding-left: 30p;
 }
 
 .bold {
@@ -46,16 +50,29 @@ h1 {
 .top-padding {
   margin-top: 60px;
 }
+.center-block {
+  float: none;
+
+}
+.center-element {
+  margin-right: auto; 
+  margin-left: auto;
+  margin-top: 300px;
+
+}
 
 .col-md-12 {
   background-color:rgba(255,255,255,0.5);
 }
 .col-md-5 {
   background-color:rgba(255,255,255,0.5);
-  height: 600px;
+  // height: 600px;
 
 }
 
+.spacer {
+  height: 400px;
+}
 .padding-head {
   padding: 20px;
 }

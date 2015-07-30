@@ -1,27 +1,35 @@
+<div class = 'row top-padding'>
+    <div class = 'col-md-12 padding-head' >
+        <h1 class = 'text-center c-font bold'>
+          Today's (Real) Weather
+        </h1>
+    </div>
 
-<center><h1>GET YOUR (REAL) WEATHER</h1></center>
-
-
-<center>
-<%= form_for(@forecast) do |f| %>
-  <%= f.text_field :zipcode, :placeholder => "enter_your_zipcode" %>
-  <%= f.submit "Get your Forecast!" %>
+<div class='row'>
+    <div class="col-md-4 col-md-offset-4 top-padding">
+<%= form_for @forecast, url: forecasts_path, html: {class: "navbar-form navbar-nav"} do |f| %>
+  <%= f.text_field :zipcode, :placeholder => "Enter Your Zipcode", class: "form-control" %>
+  <%= f.submit "Get your Forecast!", class: "btn btn-default" %>
 <% end %>
-</center>
+</div>
+</div>
 
 <% if flash[:notice] %>
     <center><div class="notice"><%= flash[:notice] %></div></center>
   <% end %>
+<div class= 'spacer'>
+</div>
 
-
+<center>
 <div id="footer">
 <footer class="footer">
   <p style="display:inline">
-  <ul style="list-style-type: none; margin: 0; padding: 0">
+  <ul style="list-style-type: none; margin: 0; padding: -0">
     <li><a href="http://flatironschool.com/" target="_blank">BUILT WITH // ♥ AT THE FLATIRON SCHOOL ©2015</a></li>
-    <li> <a href="https://github.com/AnnaErshova" target="_blank">ANNA ERSHOVA</a> <a href="https://github.com/AnnaErshova" target="_blank"></a>  |  <a href="https://github.com/benbrattain" target="_blank"> BEN BRATTAIN</a>  |  <a href="https://github.com/travisje" target="_blank"> TRAVIS EMMETT</a></li>
+    <li> <a href="https://github.com/AnnaErshova" target="_blank">ANNA ERSHOVA</a> <a href="https://github.com/AnnaErshova" target="_blank"></a>   |   <a href="https://github.com/benbrattain" target="_blank"> BEN BRATTAIN</a>   |   <a href="https://github.com/travisje" target="_blank"> TRAVIS EMMETT</a></li>
     <li><a href="https://github.com/benbrattain/Hot-Cold" target="_blank">FORK ME ON GITHUB</a></li>
   </ul>
 </p>
 </footer>
 </div>
+</center>
