@@ -26,7 +26,8 @@ class Forecast < ActiveRecord::Base
                 :uv_statement,
                 :all_hours,
                 :max_time,
-                :max_day
+                :max_day,
+                :seasonal_index
 
   def store_location
     self.store_city
@@ -105,6 +106,7 @@ class Forecast < ActiveRecord::Base
     self.collect_heat_index
     self.collect_wind_speed
     self.collect_wind_chill
+    self.collect_correct_weather_for_season
     self.collect_status
     self.collect_uv_index
     self.set_now_statement
@@ -128,9 +130,10 @@ class Forecast < ActiveRecord::Base
 
   def collect_correct_weather_for_season
     if DateTime.now<DateTime.new(2015,10,15)
-      collect_heat_index
+      self.seasonal_index = collect_heat_index
+      # binding.pry
     else
-      collect_wind_chill
+      self.seasonal_index = collect_wind_chill
     end
   end
 
