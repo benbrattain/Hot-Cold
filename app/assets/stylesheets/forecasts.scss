@@ -2,22 +2,9 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-#chart_wrapper {
-  height: 650px;
-  width: 500px;
-  float: left;
-  display: inline-block;
-  padding-top: 50px;
-  margin-left: 50px;
-}
 
-#dashboard_wrapper {
-  height: 550px;
-  width: 500px;
-  float: right;
-  display: inline-block;
-  padding-top: 50px;
-  margin-right: 50px;
+h1 {
+  font-family: 'Cabin', sans-serif;
 }
 
 .form {
@@ -29,16 +16,27 @@
 
 }
 
+.headline-pop {
+
+}
+
+.top-padding {
+  margin-top: 60px;
+}
+
 .col-md-12 {
-  background-color: white;
-  opacity: 0.7;
+  background-color:rgba(255,255,255,0.7);
 }
 .col-md-5 {
-  background-color: white;
-  opacity: 0.7;
+  background-color:rgba(255,255,255,0.7);
+
 }
 
 .container-fluid {
-     background-image: url('/assets/colorful-dusk-sky-above-the-field-14974-web.jpg');
-     background-size: cover; 
+  background-image: url('/assets/colorful-dusk-sky-above-the-field-14974-web.jpg');
+  background-size: cover;
+ }
+
+ .data-container {
+  padding: 50px;
  }
