@@ -73,8 +73,8 @@
 </div>
 
 </div>
-<br>
 
+<div>
 <class = "form"><%= form_for @forecast, url: forecasts_path, method: "POST", html: {class: "navbar-form navbar-nav"} do |f| %>
   <%= f.text_field :zipcode, :placeholder => "Enter Your Zipcode", class: "form-control" %>
   <%= f.submit "Get your Forecast!", class: "btn btn-default" %>
@@ -83,5 +83,6 @@
 
 <%= button_to "Home", root_path, method: "GET", class: 'btn btn-default' %>
 </div>
-<label for="inputEmail" class="col-lg-2 control-label">Email</label>
 
+<!-- <label for="inputEmail" class="col-lg-2 control-label">Email Us</label>
+ -->
