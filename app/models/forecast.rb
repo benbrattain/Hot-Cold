@@ -1,3 +1,5 @@
+require 'date'
+
 class Forecast < ActiveRecord::Base
 
   attr_accessor :zip_output, 
@@ -18,7 +20,6 @@ class Forecast < ActiveRecord::Base
                 :discrepancy_statement,
                 :discrepancy_index_array,
                 :first_discrepancy,
-                # :max_discrepancy_index,
                 :status,
                 :t_shirt_statement,
                 :uv_index,
@@ -124,6 +125,14 @@ class Forecast < ActiveRecord::Base
     wind_chill_calculator = WindChillCalculator.new(self)
     self.wind_chill = wind_chill_calculator.calculate
   end 
+
+  def collect_correct_weather_for_season
+    if DateTime.now<DateTime.new(2015,10,15)
+      collect_heat_index
+    else
+      collect_wind_chill
+    end
+  end
 
   def set_time              
     @time = Time.now.to_a[2]

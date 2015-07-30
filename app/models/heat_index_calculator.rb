@@ -17,23 +17,26 @@ class HeatIndexCalculator
       full_heat_index = full_heat_index(temp, humidity)
       dry_and_hot_adjustment = dry_and_hot_adjustment(temp, humidity)
       humid_and_hot_adjustment = humid_and_hot_adjustment(temp, humidity)
-      run_heat_index_calc(simple_heat_index, full_heat_index, temp, humidity)
+      run_heat_index_calc(temp, humidity)
       i += 1
     end 
     self.heat_index
   end
 
-  def run_heat_index_calc(simple_heat_index, full_heat_index, temp, humidity)
-    if hot?(simple_heat_index, temp)
+  def run_heat_index_calc(temp, humidity)
+    # simple_heat_index(temp, humidity)
+    if hot?(temp, humidity)
+      # binding.pry
       if hot_and_dry?(temp, humidity) 
         self.heat_index << (full_heat_index-dry_and_hot_adjustment(temp, humidity)).to_i
       elsif hot_and_humid?(temp, humidity) 
-        self.heat_index << (full_heat_index-humid_and_hot_adjustment(temp, humidity)).to_i
+        self.heat_index << (full_heat_index(temp,humidity)-humid_and_hot_adjustment(temp, humidity)).to_i
       else 
-        self.heat_index << full_heat_index
+        self.heat_index << full_heat_index(temp, humidity)
+        # binding.pry
       end
     else
-      self.heat_index << simple_heat_index
+      self.heat_index << simple_heat_index(temp, humidity)
     end 
   end
 
@@ -45,8 +48,9 @@ class HeatIndexCalculator
     humidity = forecast.humidity[i].to_f
   end
 
-  def hot?(simple_heat_index, temp)
-    (simple_heat_index+temp)/2 >= 80
+  def hot?(temp, humidity)
+    # simple_heat_index
+    (((0.5 * (temp + 61 + ((temp-68)*1.2) + (humidity*0.094))).to_i)+temp)/2 >= 80
   end
 
   def hot_and_dry?(temp, humidity)
