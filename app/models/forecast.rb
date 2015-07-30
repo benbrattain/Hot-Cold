@@ -66,7 +66,7 @@ class Forecast < ActiveRecord::Base
   end
 
   def filter_array_length(array)
-    array.values_at(* array.each_index.select {|i| i.odd?})
+    array.values_at(* array.each_index.select {|i| i.even?})
   end
   
   def collect_hours 
@@ -90,6 +90,7 @@ class Forecast < ActiveRecord::Base
   def collect_humidity 
     self.humidity = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["humidity"]}
     self.humidity = filter_array_length(self.humidity)
+    # binding.pry
   end
 
   def collect_temperature 

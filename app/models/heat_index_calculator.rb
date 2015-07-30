@@ -62,7 +62,7 @@ class HeatIndexCalculator
   end
 
   def simple_heat_index(temp, humidity)
-    (0.5 * (temp + 61 + ((temp-68)*1.2) + (humidity*0.094))).to_i
+    (0.5*((temp+61+((temp-68)*1.2))+(humidity*0.094))).to_i
   end
 
   def full_heat_index(temp, humidity)
