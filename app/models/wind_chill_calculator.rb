@@ -10,7 +10,7 @@ class WindChillCalculator
   def calculate
     i = 0
     self.wind_chill = []
-    while i < 36 do 
+    while i < self.forecast.wind_speed.length do 
       temp = temp(i)
       wind_speed = wind_speed(i)
       wind_chill_calc = (35.74+(0.6215*temp)

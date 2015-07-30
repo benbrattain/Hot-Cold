@@ -64,10 +64,15 @@ class Forecast < ActiveRecord::Base
   def scrape_json # creates a json using generated url
     @api_response = open(self.url).read
   end
+
+  def filter_array_length(array)
+    array.values_at(* array.each_index.select {|i| i.odd?})
+  end
   
   def collect_hours 
     unformatted_hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["hour"]}
     self.hours = []
+    unformatted_hours = filter_array_length(unformatted_hours)
     unformatted_hours.each do |hour|
       if hour.to_i == 0 
         hour = "midnight"
@@ -84,18 +89,22 @@ class Forecast < ActiveRecord::Base
 
   def collect_humidity 
     self.humidity = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["humidity"]}
+    self.humidity = filter_array_length(self.humidity)
   end
 
   def collect_temperature 
     self.temperature = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["temp"]["english"]}
+    self.temperature = filter_array_length(self.temperature)
   end
 
   def collect_wind_speed 
     self.wind_speed = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["wspd"]["english"]}
+    self.wind_speed = filter_array_length(self.wind_speed)
   end
 
   def collect_status 
     self.status = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["wx"]}
+    self.status = filter_array_length(self.status)
   end
 
   def collect_data
@@ -228,7 +237,7 @@ class Forecast < ActiveRecord::Base
   def calculate_discrepancy
     self.discrepancy = []
     i = 0
-    while i < 36
+    while i < self.heat_index.length
       num = self.heat_index[i].to_i - self.temperature[i].to_i
       self.discrepancy << num
       i += 1
@@ -313,6 +322,7 @@ class Forecast < ActiveRecord::Base
 
   def collect_uv_index # returns an array of 36 elements
     self.uv_index = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["uvi"]}
+    self.uv_index = filter_array_length(self.uv_index)
   end
 
   # https://en.wikipedia.org/wiki/Ultraviolet_index
