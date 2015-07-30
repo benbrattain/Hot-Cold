@@ -2,22 +2,45 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    font-family: 'Cabin', sans-serif
+    !important;    
+    color: rgb(42,47,76)
+    !important;
+}
 
 h1 {
-  font-family: 'Cabin', sans-serif;
+  font-size: 55px
+  !important;
+}
+
+.c-font {
+  
+}
+
+.dash-list {
+  font-size: 25px;
 }
 
 .form {
   clear: both;
-  padding-left: 30px;
+  padding-left: 30p
 }
 
-.white-back-column{
-
-}
-
-.headline-pop {
-
+.bold {
+  font-weight: bold;
 }
 
 .top-padding {
@@ -25,11 +48,22 @@ h1 {
 }
 
 .col-md-12 {
-  background-color:rgba(255,255,255,0.7);
+  background-color:rgba(255,255,255,0.5);
 }
 .col-md-5 {
-  background-color:rgba(255,255,255,0.7);
+  background-color:rgba(255,255,255,0.5);
+  height: 600px;
 
+}
+
+.padding-head {
+  padding: 20px;
+}
+
+.padding {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding:40px;
 }
 
 .container-fluid {
