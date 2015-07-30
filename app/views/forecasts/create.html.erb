@@ -75,21 +75,13 @@
 </div>
 <br>
 
-<class = "form"><%= form_for @forecast, url: forecasts_path, html: {class: "navbar-form navbar-right", role: "search", _lpchecked: "1"}, method: "POST" do |f| %>
-    <h4 align="right">
-    <%= f.text_field :zipcode, :placeholder => "zipcode" %>
-    <%= f.submit "Get another forecast!" %>
-    <% end %>
+<class = "form"><%= form_for @forecast, url: forecasts_path, method: "POST", html: {class: "navbar-form navbar-nav"} do |f| %>
+  <%= f.text_field :zipcode, :placeholder => "Enter Your Zipcode", class: "form-control" %>
+  <%= f.submit "Get your Forecast!", class: "btn btn-default" %>
+<% end %>
 </h4>
 
-<%= button_to "Home", root_path, class: 'button' %>
+<%= button_to "Home", root_path, method: "GET", class: 'btn btn-default' %>
 </div>
 <label for="inputEmail" class="col-lg-2 control-label">Email</label>
 
-
-      <form class="navbar-form navbar-right" role="search" _lpchecked="1">
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Get another forecast!">
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
-      </form>

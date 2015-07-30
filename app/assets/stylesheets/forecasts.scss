@@ -40,7 +40,7 @@ h1 {
 
 .form {
   clear: both;
-  padding-left: 30p
+  padding-left: 30p;
 }
 
 .bold {
@@ -49,6 +49,16 @@ h1 {
 
 .top-padding {
   margin-top: 60px;
+}
+.center-block {
+  float: none;
+
+}
+.center-element {
+  margin-right: auto; 
+  margin-left: auto;
+  margin-top: 300px;
+
 }
 
 .col-md-12 {
@@ -60,6 +70,9 @@ h1 {
 
 }
 
+.spacer {
+  height: 400px;
+}
 .padding-head {
   padding: 20px;
 }
