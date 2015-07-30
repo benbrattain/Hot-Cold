@@ -39,8 +39,9 @@
 
 @options_temps =    {animationEasing: "easeOutElastic",
                     # generateLegend: true,
-                    scaleFontSize: 10,
-                    responsive: false,
+                    scaleFontColor: "black",
+                    scaleFontSize: 14,
+                    responsive: true,
                     datasetFill: false,
                     width: 475,
                     height: 475,
@@ -48,29 +49,33 @@
                     scaleGridLineColor: "rgba(250,128,114,0.1)"
                     } %>
 
-<center><h4 class = 'dash-list'>Forecasted Temperature vs.</h4>
-<h4 class = 'dash-list'> What It Actually Will Feel Like</h4></center>
+<center><h4 class = 'dash-font'><span class= 'red'>Perceived Temperature vs. </span></h4>
+<h4 class = 'dash-font'> Actual Temperature </h4></center>
 <%= line_chart @data_temps, @options_temps %>
 </div>
 </div>
 
 <div class= "col-md-2">
 </div>
-
+                                
 <div class = "col-md-5">
-    <div class = "padding">
-        <ul class = 'list-group dash-list'>    
-        <li>Right now: <img src=<%=@forecast.conditions_icon%> alt="clear"> <%=@forecast.temperature[0]%>F, feels like <%=@forecast.heat_index[0]%>F, <%=@forecast.humidity[0]%>% humidity.</li>
-        <li><%= @forecast.discrepancy_statement %></li>
-        <li><%= @forecast.t_shirt_statement %></li>
-        <li><%= @forecast.uv_statement %></li>
-        </ul>
+    <div class = "padding dash-font"> 
+        <p><img src ="<%=@forecast.conditions_icon%>"> Right now it's <%=@forecast.temperature[0]%>°F, <%=@forecast.humidity[0]%>% humidity. </p>
+        <br>   
+        <p>Feels like <%=@forecast.heat_index[0]%>°F. </p>
+        <br>
+        <p><%= @forecast.discrepancy_statement %></p>
+        <br>
+        <p><%= @forecast.t_shirt_statement %></p>
+        <br>
+        <p><%= @forecast.uv_statement %></p>
     </div>
 </div>
 
 </div>
 <br>
-<class = "form"><%= form_for @forecast, url: forecasts_path, method: "POST" do |f| %>
+
+<class = "form"><%= form_for @forecast, url: forecasts_path, html: {class: "navbar-form navbar-right", role: "search", _lpchecked: "1"}, method: "POST" do |f| %>
     <h4 align="right">
     <%= f.text_field :zipcode, :placeholder => "zipcode" %>
     <%= f.submit "Get another forecast!" %>
@@ -79,4 +84,12 @@
 
 <%= button_to "Home", root_path, class: 'button' %>
 </div>
+<label for="inputEmail" class="col-lg-2 control-label">Email</label>
 
+
+      <form class="navbar-form navbar-right" role="search" _lpchecked="1">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Get another forecast!">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
