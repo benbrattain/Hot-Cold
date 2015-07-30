@@ -30,13 +30,13 @@
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(151,187,205,1)",
-            data: @forecast.heat_index
+            data: @forecast.seasonal_index
         }
     ]
 }
 
 @options_temps =    {animationEasing: "easeOutElastic",
-                    generateLegend: true,
+                    # generateLegend: true,
                     scaleFontSize: 10,
                     responsive: false,
                     datasetFill: false,
@@ -44,7 +44,6 @@
                     height: 400,
                     scaleLineColor: "rgba(139,0,0,1)",
                     scaleGridLineColor: "rgba(250,128,114,0.1)"
-                    # scaleOverride: true
                     } %>
 
 
