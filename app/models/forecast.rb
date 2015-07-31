@@ -52,16 +52,16 @@ class Forecast < ActiveRecord::Base
     self.state = self.zip_output[:state_code]
   end
 
-  def city_to_slug # for use in json url
+  def city_to_slug 
     self.city_slug = self.city.downcase.gsub(" ", "_")
   end
 
-  def to_url # generates url for the json object with all forecast data
+  def to_url 
     api = ENV["weather_api"]
     self.url = "http://api.wunderground.com/api/#{api}/hourly/q/#{self.state}/#{self.city_slug}.json"
   end
 
-  def scrape_json # creates a json using generated url
+  def scrape_json 
     @api_response = open(self.url).read
   end
 
@@ -90,7 +90,6 @@ class Forecast < ActiveRecord::Base
   def collect_humidity 
     self.humidity = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["humidity"]}
     self.humidity = filter_array_length(self.humidity)
-    # binding.pry
   end
 
   def collect_temperature 
@@ -151,41 +150,44 @@ class Forecast < ActiveRecord::Base
   end
 
   def set_now_statement
-   temperature_now = self.temperature[0].to_i # in F
-   humidity_now = self.humidity[0].to_i # in %
+   temperature_now = self.temperature[0].to_i 
+   humidity_now = self.humidity[0].to_i 
    if sleepy_time?
-     self.now_statement = "Night time. Dear Lord. Don't you sleep? "
+      sleepy_time_array = ["Night time. Dear Lord. Don't you sleep?", "Why are you not in bed?!", "Up late, are we?"]
+      self.now_statement = sleepy_time_array[rand(0..sleepy_time_array-1)]
    else
      if very_hot? && humid?
-         hot_and_humid_array = ["Mother Nature forgot her meds today", "Hot and gross! Kind of like a wet gym sock left out in a hamper.", "Like hot molasses.", "I am done reporting the weather. This sucks."]
+         hot_and_humid_array = ["Mother Nature forgot her meds today.", "Hot and gross! Like a wet gym sock left out in a hamper.", "Like hot molasses.", "I am done reporting the weather. This sucks.", "No greenhouse necessary."]
          self.now_statement = hot_and_humid_array[rand(0..hot_and_humid_array-1)]
      elsif very_hot? && comfortably_humid?
-         self.now_statement = "Extremely hot! But at least it's not too humid."
+        hot_and_ok_array = ["Make sure to hydrate.", "Extremely hot! But at least not too humid.", "I don't know everything, but I do know it's nice out."]
+        self.now_statement = hot_and_ok_array[rand(0..hot_and_ok_array-1)]
      elsif very_hot?
-         hot_and_dry_array = ["Where are you, Death Valley?!", "HOT.DRY. Are you on Venus?", "Insert amazing weather forecast here. Sorry, it sucks out."]
+         hot_and_dry_array = ["Where are you, Death Valley?!", "HOT.DRY. Are you on Venus?", "Insert amazing weather forecast here. Sorry, it sucks out.", "Weather is misbehaving.", "Only leave the indoors for emergency beer runs."]
          self.now_statement = hot_and_dry_array[rand(0..hot_and_dry_array-1)]
      elsif reasonably_hot? && humid?
-         hot_and_humid_array = ["Hot and gross! Consider a move to Antarctica.", "I hear Lake Titicaca is nice this time of year.", "New goal: become a penguin and move somewhere cold."]
+         hot_and_humid_array = ["Hot and gross! Consider a move to Antarctica.", "I hear Lake Titicaca is nice this time of year.", "New goal: become a penguin and move somewhere cold.", "Buy a dehumidifier and turn your AC on. Don't move until the weather changes."]
          self.now_statement = hot_and_humid_array[rand(0..hot_and_humid_array.length-1)]
      elsif reasonably_hot? && comfortably_humid?
-         hot_and_comfortable_array = ["Eek pretty hot! But at least it's not too humid.", "Hot. Not Muggy. Go play outdoors.", "HOT. Be happy it is not humid."] 
+         hot_and_comfortable_array = ["Eek pretty hot! But at least it's not too humid.", "Hot. Not Muggy. Go play outdoors.", "HOT. Be happy it is not humid.", "Pool party time!!!"] 
          self.now_statement = hot_and_comfortable_array[rand(0..hot_and_comfortable_array.length-1)]
      elsif reasonably_hot?
-         self.now_statement = "Pretty darn hot, with dry heat!"
+        reasonably_hot_array = ["Pretty darn hot, with dry heat!", "I feel like an old sweatshirt, fresh out of a dryer.", "Like being inside a bread oven, minus yummy bread."]  
+        self.now_statement = reasonably_hot_array[rand(0..reasonably_hot_array.length-1)]
      elsif warm? && humid?
-         warm_and_humid_array = ["Decent weather out, but so humid you could grow moss."]
+         warm_and_humid_array = ["Decent weather out, but so humid you could grow moss.", "It would be SO much nicer if it were not as humid.", "Thick'n'humid."]
          self.now_statement = warm_and_humid_array[rand(0..warm_and_humid_array.length-1)]
      elsif warm? && comfortably_humid?
-         pleasant_array = ["Pleasant as shit out.", "Silky and smooth out", "Goldilocks approves of the weather totay", "Next app idea: how to make an app to re-live this weather at will.", "Good day for Groundhog Day part II"]
+         pleasant_array = ["Pleasant as shit out.", "Silky and smooth out", "Goldilocks approves of the weather totay", "Next app idea: how to make an app to re-live this weather at will.", "Good day for Groundhog Day part II.", "Wow, the weather is nice for once!"]
          self.now_statement = pleasant_array[rand(0..pleasant_array.length-1)]
      elsif warm?
-         warm_and_dry_array = ["Every once in a while, just stop bitching about the weather.", "We all know it's hot and dry. Stop complaining.", ]
+         warm_and_dry_array = ["Every once in a while, just stop bitching about the weather.", "We all know it's hot and dry. Stop complaining.", "Good time for a cold beer."]
          self.now_statement = warm_and_dry_array[rand(0..warm_and_dry_array.length-1)]
      elsif comfortable?
-       comfortable_array = ["Not exactly warm. Layer up.", "Don't you wish you were somewhere warm right now?", "I hear mulled wine is nice for this weather."]
+       comfortable_array = ["Not exactly warm. Layer up.", "Don't you wish you were somewhere warm right now?", "I hear mulled wine is nice for this weather.", "Hot tea. Lots of it. Maybe with some whisky."]
        self.now_statement = comfortable_array[rand(0..comfortable_array.length-1)]
      else 
-       cold_array = ["COLD. I hope you are a penguin.", "Bring out your trusty Uggs"]
+       cold_array = ["COLD. I hope you are a penguin.", "Bring out your trusty Uggs", "'Tis the season to winterize yourself.", "Time to look into a Bahamas vacation?"]
        self.now_statement = cold_array[rand(0..cold_array.length-1)]
      end 
    end 
@@ -232,7 +234,7 @@ class Forecast < ActiveRecord::Base
     @time.between?(23,24) || @time.between?(0,5) 
   end
 
-  def set_conditions_icon # shows an icon for current conditions, such as sunny, overcast, thunderstorms, etc
+  def set_conditions_icon 
     self.conditions_icon = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["icon_url"]}.first
   end
 
@@ -249,7 +251,12 @@ class Forecast < ActiveRecord::Base
 
   def find_discrepancy_max
     self.calculate_discrepancy
-    self.max_discrepancy = self.discrepancy.max
+    # binding.pry
+    if self.discrepancy.any?{|x| x <= -3 }
+      self.max_discrepancy = self.discrepancy.min
+    else
+      self.max_discrepancy = self.discrepancy.max
+    end
   end
 
   def find_discrepancy_index
@@ -258,7 +265,7 @@ class Forecast < ActiveRecord::Base
     self.first_discrepancy = self.discrepancy_index_array.first 
     self.all_hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["pretty"]}
     self.discrepancy_index = self.all_hours[self.first_discrepancy] 
-    self.max_time = self.discrepancy_index.split(" ")[0]+self.all_hours[self.first_discrepancy].split(" ")[1] # 11am
+    self.max_time = self.discrepancy_index.split(" ")[0]+self.all_hours[self.first_discrepancy].split(" ")[1] 
     if Time.now.to_a[3] == self.discrepancy_index.split(" ")[5].split(",").join("").to_i
       self.max_day = "today"
     else 
@@ -275,6 +282,9 @@ class Forecast < ActiveRecord::Base
     elsif self.find_discrepancy_max.between?(4,6)
       self.discrepancy_statement = 
       "Watch out! It will feel much hotter than forecasted starting around #{self.max_time} #{self.max_day}."
+    elsif self.find_discrepancy_max < 0
+      self.discrepancy_statement = 
+      "Lucky you. It will feel cooler than it actually is."
     else
       self.discrepancy_statement = 
       "In the next 36 hours, it will feel pretty close to what meteorologists are saying."
