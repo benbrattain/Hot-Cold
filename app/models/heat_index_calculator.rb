@@ -24,16 +24,13 @@ class HeatIndexCalculator
   end
 
   def run_heat_index_calc(temp, humidity)
-    # simple_heat_index(temp, humidity)
     if hot?(temp, humidity)
-      # binding.pry
       if hot_and_dry?(temp, humidity) 
         self.heat_index << (full_heat_index-dry_and_hot_adjustment(temp, humidity)).to_i
       elsif hot_and_humid?(temp, humidity) 
         self.heat_index << (full_heat_index(temp,humidity)-humid_and_hot_adjustment(temp, humidity)).to_i
       else 
         self.heat_index << full_heat_index(temp, humidity)
-        # binding.pry
       end
     else
       self.heat_index << simple_heat_index(temp, humidity)
@@ -49,7 +46,6 @@ class HeatIndexCalculator
   end
 
   def hot?(temp, humidity)
-    # simple_heat_index
     (((0.5 * (temp + 61 + ((temp-68)*1.2) + (humidity*0.094))).to_i)+temp)/2 >= 80
   end
 
