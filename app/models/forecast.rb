@@ -253,7 +253,7 @@ class Forecast < ActiveRecord::Base
   def find_discrepancy_max
     self.calculate_discrepancy
     # binding.pry
-    if self.discrepancy.any?{|x| x <= 2 }
+    if self.discrepancy.any?{|x| x <= -3 }
       self.max_discrepancy = self.discrepancy.min
     else
       self.max_discrepancy = self.discrepancy.max
