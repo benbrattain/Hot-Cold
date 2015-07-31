@@ -195,37 +195,31 @@ class Forecast < ActiveRecord::Base
    if sleepy_time?
      self.now_statement = "Night time. Dear Lord. Don't you sleep? "
    else
-     if very_hot?
-       if humid?
+     if very_hot? && humid?
          hot_and_humid_array = ["Mother Nature forgot her meds today", "Hot and gross! Kind of like a wet gym sock left out in a hamper.", "Like hot molasses.", "I am done reporting the weather. This sucks."]
          self.now_statement = hot_and_humid_array[rand(0..hot_and_humid_array-1)]
-       elsif comfortably_humid?
+     elsif very_hot? && comfortably_humid?
          self.now_statement = "Extremely hot! But at least it's not too humid."
-       else 
+     elsif very_hot?
          hot_and_dry_array = ["Where are you, Death Valley?!", "HOT.DRY. Are you on Venus?", "Insert amazing weather forecast here. Sorry, it sucks out."]
          self.now_statement = hot_and_dry_array[rand(0..hot_and_dry_array-1)]
-       end
-     elsif reasonably_hot?
-       if humid?
+     elsif reasonably_hot? && humid?
          hot_and_humid_array = ["Hot and gross! Consider a move to Antarctica.", "I hear Lake Titicaca is nice this time of year.", "New goal: become a penguin and move somewhere cold."]
          self.now_statement = hot_and_humid_array[rand(0..hot_and_humid_array.length-1)]
-       elsif comfortably_humid?
+     elsif reasonably_hot? && comfortably_humid?
          hot_and_comfortable_array = ["Eek pretty hot! But at least it's not too humid.", "Hot. Not Muggy. Go play outdoors.", "HOT. Be happy it is not humid."] 
          self.now_statement = hot_and_comfortable_array[rand(0..hot_and_comfortable_array.length-1)]
-       else
+     elsif reasonably_hot?
          self.now_statement = "Pretty darn hot, with dry heat!"
-       end
-     elsif warm?
-       if humid?
+     elsif warm? && humid?
          warm_and_humid_array = ["Decent weather out, but so humid you could grow moss."]
          self.now_statement = warm_and_humid_array[rand(0..warm_and_humid_array.length-1)]
-       elsif comfortably_humid?
-         pleasant_array = ["Pleasant. Go enjoy the outdoors.", "Silky and smooth out", "Goldilocks approves of the weather totay", "Next app idea: how to make an app to re-live this weather at will.", "Good day for Groundhog Day part II"]
+     elsif warm? && comfortably_humid?
+         pleasant_array = ["Pleasant as shit out.", "Silky and smooth out", "Goldilocks approves of the weather totay", "Next app idea: how to make an app to re-live this weather at will.", "Good day for Groundhog Day part II"]
          self.now_statement = pleasant_array[rand(0..pleasant_array.length-1)]
-       else
+     elsif warm?
          warm_and_dry_array = ["Every once in a while, just stop bitching about the weather.", "We all know it's hot and dry. Stop complaining.", ]
          self.now_statement = warm_and_dry_array[rand(0..warm_and_dry_array.length-1)]
-       end
      elsif comfortable?
        comfortable_array = ["Not exactly warm. Layer up.", "Don't you wish you were somewhere warm right now?", "I hear mulled wine is nice for this weather."]
        self.now_statement = comfortable_array[rand(0..comfortable_array.length-1)]
@@ -337,7 +331,7 @@ class Forecast < ActiveRecord::Base
           self.t_shirt_statement = "It is T-shirt weather for most people."
         elsif temperature_now >= 68 && cloudy?
             self.t_shirt_statement = "T-shirt weather, but a bit overcast."
-        else temperature_now >= 73 && thunder?
+        elsif temperature_now >= 73 && thunder?
           self.t_shirt_statement = "T-shirt weather, but don't forget your umbrella."
         end
       elsif temperature_now >= 42
