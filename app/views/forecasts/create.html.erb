@@ -1,7 +1,11 @@
 <div class = 'row top-padding'>
     <div class = 'col-md-12 padding-head' >
-        <h1 class = 'text-center c-font bold'>Right now in <%=@forecast.city %>, <%= @forecast.state %> (<%= @forecast.zipcode%>)<%= %></h1>
-        <h1 class = 'text-center'>it is <%=@forecast.now_statement%> </h1>
+        <h1 class = 'text-center c-font bold'>
+            <%=@forecast.now_statement%> 
+        </h1>
+        <h2 class = 'text-center'>
+            <%=@forecast.city %>, <%= @forecast.state %> (<%= @forecast.zipcode%>)<%= %>
+        </h2>
 <!-- <center><h1>From [forecast start time] to [forecast end time]</h1></center>
 <center><h1>It will be...<%= %></h1></center>
  -->
@@ -60,7 +64,8 @@
                                 
 <div class = "col-md-5">
     <div class = "padding dash-font"> 
-        <p><img src ="<%=@forecast.conditions_icon%>"> Right now it's <%=@forecast.temperature[0]%>°F, <%=@forecast.humidity[0]%>% humidity. </p>
+        
+        <p> Right now it's <%=@forecast.temperature[0]%>°F,  <%=@forecast.humidity[0]%>% humidity <img src ="<%=@forecast.conditions_icon%>"> </p>
         <br>   
         <p>Feels like <%=@forecast.heat_index[0]%>°F. </p>
         <br>
@@ -73,16 +78,18 @@
 </div>
 
 </div>
+<div class='row'>
+<div class="form-horizontal">
 
-<div>
 <class = "form"><%= form_for @forecast, url: forecasts_path, method: "POST", html: {class: "navbar-form navbar-nav"} do |f| %>
   <%= f.text_field :zipcode, :placeholder => "Enter Your Zipcode", class: "form-control" %>
-  <%= f.submit "Get your Forecast!", class: "btn btn-default" %>
+  <%= f.submit "Get Another Forecast!", class: "btn btn-default" %>
 <% end %>
-</h4>
 
-<%= button_to "Home", root_path, method: "GET", class: 'btn btn-default' %>
+</div>
 </div>
 
+<!-- /.row -->
 <!-- <label for="inputEmail" class="col-lg-2 control-label">Email Us</label>
  -->
+

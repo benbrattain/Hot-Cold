@@ -26,8 +26,9 @@ h1 {
   !important;
 }
 
-.c-font {
-  
+h2 {
+  font-size: 30px
+  !important;
 }
 
 .red {
@@ -38,11 +39,6 @@ h1 {
   font-size: 25px;
 }
 
-.form {
-  clear: both;
-  padding-left: 30p;
-}
-
 .bold {
   font-weight: bold;
 }
@@ -50,6 +46,7 @@ h1 {
 .top-padding {
   margin-top: 60px;
 }
+
 .center-block {
   float: none;
 
@@ -64,17 +61,40 @@ h1 {
 .col-md-12 {
   background-color:rgba(255,255,255,0.5);
 }
+
 .col-md-5 {
   background-color:rgba(255,255,255,0.5);
-  // height: 600px;
 
+
+.form-container {
+  margin-right: auto;
+  margin-left: auto;
+  width: 300px;
+}
+
+.form-horizontal {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  margin-left: -15px;
+}
+
+.btn {
+  background-color:rgba(255,255,255,0.5) !important;
+}
+.col-centered{
+    margin-left: 40px;
 }
 
 .spacer {
-  height: 400px;
+  height: 500px;
 }
+
 .padding-head {
   padding: 20px;
+}
+
+.notice {
+  background-color:rgba(255,255,255,0.5);
 }
 
 .padding {
@@ -86,8 +106,13 @@ h1 {
 .container-fluid {
   background-image: url('/assets/colorful-dusk-sky-above-the-field-14974-web.jpg');
   background-size: cover;
+  min-height: 100vh !important;
  }
 
  .data-container {
   padding: 50px;
+ }
+
+ .footer {
+  margin-top: 15px;
  }
