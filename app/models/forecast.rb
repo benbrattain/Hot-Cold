@@ -52,16 +52,16 @@ class Forecast < ActiveRecord::Base
     self.state = self.zip_output[:state_code]
   end
 
-  def city_to_slug # for use in json url
+  def city_to_slug 
     self.city_slug = self.city.downcase.gsub(" ", "_")
   end
 
-  def to_url # generates url for the json object with all forecast data
+  def to_url 
     api = ENV["weather_api"]
     self.url = "http://api.wunderground.com/api/#{api}/hourly/q/#{self.state}/#{self.city_slug}.json"
   end
 
-  def scrape_json # creates a json using generated url
+  def scrape_json 
     @api_response = open(self.url).read
   end
 
@@ -90,7 +90,6 @@ class Forecast < ActiveRecord::Base
   def collect_humidity 
     self.humidity = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["humidity"]}
     self.humidity = filter_array_length(self.humidity)
-    # binding.pry
   end
 
   def collect_temperature 
@@ -158,7 +157,7 @@ class Forecast < ActiveRecord::Base
       self.now_statement = sleepy_time_array[rand(0..sleepy_time_array-1)]
    else
      if very_hot? && humid?
-         hot_and_humid_array = ["Mother Nature forgot her meds today", "Hot and gross! Like a wet gym sock left out in a hamper.", "Like hot molasses.", "I am done reporting the weather. This sucks.", "No greenhouse necessary."]
+         hot_and_humid_array = ["Mother Nature forgot her meds today.", "Hot and gross! Like a wet gym sock left out in a hamper.", "Like hot molasses.", "I am done reporting the weather. This sucks.", "No greenhouse necessary."]
          self.now_statement = hot_and_humid_array[rand(0..hot_and_humid_array-1)]
      elsif very_hot? && comfortably_humid?
         hot_and_ok_array = ["Make sure to hydrate.", "Extremely hot! But at least not too humid.", "I don't know everything, but I do know it's nice out."]
