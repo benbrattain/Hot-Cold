@@ -154,17 +154,27 @@ class Forecast < ActiveRecord::Base
    humidity_now = self.humidity[0].to_i 
    if sleepy_time?
       sleepy_time_array = ["Night time. Dear Lord. Don't you sleep?", "Why are you not in bed?!", "Up late, are we?"]
-      self.now_statement = sleepy_time_array[rand(0..sleepy_time_array-1)]
+      self.now_statement = sleepy_time_array[rand(0..sleepy_time_array.length-1)]
    else
      if very_hot? && humid?
-         hot_and_humid_array = ["Mother Nature forgot her meds today.", "Hot and gross! Like a wet gym sock left out in a hamper.", "Like hot molasses.", "I am done reporting the weather. This sucks.", "No greenhouse necessary."]
-         self.now_statement = hot_and_humid_array[rand(0..hot_and_humid_array-1)]
+          if clear_or_sunny?
+            hot_and_humid_array = ["Mother Nature forgot her meds today.", "Hot and gross! Like a wet gym sock left out in a hamper.", "Like hot molasses.", "I am done reporting the weather. This sucks.", "No greenhouse necessary.", "You are my Sunshine."]
+            self.now_statement = hot_and_humid_array[rand(0..hot_and_humid_array.length-1)]
+          else
+            hot_and_humid_array = ["Mother Nature forgot her meds today.", "Hot and gross! Like a wet gym sock left out in a hamper.", "Like hot molasses.", "I am done reporting the weather. This sucks.", "No greenhouse necessary."]
+            self.now_statement = hot_and_humid_array[rand(0..hot_and_humid_array.length-1)]
+          end
      elsif very_hot? && comfortably_humid?
-        hot_and_ok_array = ["Make sure to hydrate.", "Extremely hot! But at least not too humid.", "I don't know everything, but I do know it's nice out."]
-        self.now_statement = hot_and_ok_array[rand(0..hot_and_ok_array-1)]
+        if clear_or_sunny?
+          hot_and_ok_array = ["Make sure to hydrate.", "Extremely hot! But at least not too humid.", "I don't know everything, but I do know it's nice out.", "You are the sunshine of my life."]
+          self.now_statement = hot_and_ok_array[rand(0..hot_and_ok_array.length-1)]
+        else
+          hot_and_ok_array = ["Make sure to hydrate.", "Extremely hot! But at least not too humid.", "I don't know everything, but I do know it's nice out."]
+          self.now_statement = hot_and_ok_array[rand(0..hot_and_ok_array.length-1)]
+        end
      elsif very_hot?
          hot_and_dry_array = ["Where are you, Death Valley?!", "HOT.DRY. Are you on Venus?", "Insert amazing weather forecast here. Sorry, it sucks out.", "Weather is misbehaving.", "Only leave the indoors for emergency beer runs."]
-         self.now_statement = hot_and_dry_array[rand(0..hot_and_dry_array-1)]
+         self.now_statement = hot_and_dry_array[rand(0..hot_and_dry_array.length-1)]
      elsif reasonably_hot? && humid?
          hot_and_humid_array = ["Hot and gross! Consider a move to Antarctica.", "I hear Lake Titicaca is nice this time of year.", "New goal: become a penguin and move somewhere cold.", "Buy a dehumidifier and turn your AC on. Don't move until the weather changes."]
          self.now_statement = hot_and_humid_array[rand(0..hot_and_humid_array.length-1)]
@@ -172,14 +182,24 @@ class Forecast < ActiveRecord::Base
          hot_and_comfortable_array = ["Eek pretty hot! But at least it's not too humid.", "Hot. Not Muggy. Go play outdoors.", "HOT. Be happy it is not humid.", "Pool party time!!!"] 
          self.now_statement = hot_and_comfortable_array[rand(0..hot_and_comfortable_array.length-1)]
      elsif reasonably_hot?
-        reasonably_hot_array = ["Pretty darn hot, with dry heat!", "I feel like an old sweatshirt, fresh out of a dryer.", "Like being inside a bread oven, minus yummy bread."]  
-        self.now_statement = reasonably_hot_array[rand(0..reasonably_hot_array.length-1)]
+        if clear_or_sunny?
+          reasonably_hot_array = ["Pretty darn hot, with dry heat!", "I feel like an old sweatshirt, fresh out of a dryer.", "Like being inside a bread oven, minus yummy bread.", "Hot'n'Dry.", "You are the sunshine of my life."]  
+          self.now_statement = reasonably_hot_array[rand(0..reasonably_hot_array.length-1)]    
+        else
+          reasonably_hot_array = ["Pretty darn hot, with dry heat!", "I feel like an old sweatshirt, fresh out of a dryer.", "Like being inside a bread oven, minus yummy bread.", "Hot'n'Dry."]  
+          self.now_statement = reasonably_hot_array[rand(0..reasonably_hot_array.length-1)]
+        end
      elsif warm? && humid?
          warm_and_humid_array = ["Decent weather out, but so humid you could grow moss.", "It would be SO much nicer if it were not as humid.", "Thick'n'humid."]
          self.now_statement = warm_and_humid_array[rand(0..warm_and_humid_array.length-1)]
      elsif warm? && comfortably_humid?
-         pleasant_array = ["Pleasant as shit out.", "Silky and smooth out", "Goldilocks approves of the weather totay", "Next app idea: how to make an app to re-live this weather at will.", "Good day for Groundhog Day part II.", "Wow, the weather is nice for once!"]
-         self.now_statement = pleasant_array[rand(0..pleasant_array.length-1)]
+          if clear_or_sunny?
+            pleasant_array = ["Pleasant as shit out.", "Silky and smooth out", "Goldilocks approves of the weather totay", "Next app idea: how to make an app to re-live this weather at will.", "Good day for Groundhog Day part II.", "Wow, the weather is nice for once!", "You are my sunshine, my only sunshine."]
+            self.now_statement = pleasant_array[rand(0..pleasant_array.length-1)]
+          else
+            pleasant_array = ["Pleasant as shit out.", "Silky and smooth out", "Goldilocks approves of the weather totay", "Next app idea: how to make an app to re-live this weather at will.", "Good day for Groundhog Day part II.", "Wow, the weather is nice for once!"]
+            self.now_statement = pleasant_array[rand(0..pleasant_array.length-1)]
+          end
      elsif warm?
          warm_and_dry_array = ["Every once in a while, just stop bitching about the weather.", "We all know it's hot and dry. Stop complaining.", "Good time for a cold beer."]
          self.now_statement = warm_and_dry_array[rand(0..warm_and_dry_array.length-1)]
