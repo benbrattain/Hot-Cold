@@ -6,9 +6,13 @@
         <h2 class = 'text-center'>
             <%=@forecast.city %>, <%= @forecast.state %> (<%= @forecast.zipcode%>)<%= %>
         </h2>
-<!-- <center><h1>From [forecast start time] to [forecast end time]</h1></center>
-<center><h1>It will be...<%= %></h1></center>
- -->
+        <center>
+            <h3>
+                <a href="#" data-toggle="popover" title="What the Weathermen Won't Tell You" data-content="We use advanced meteorological science to provide you with real-time and forecast details to reflect the true feel outside. Provides a healthy does of humour and alerts for heat index, wind chill, UV, and more.">
+                    What is this about?
+                </a>
+            </h3>
+        </center>
     </div>
  </div>
  <div class = 'data-container'>
