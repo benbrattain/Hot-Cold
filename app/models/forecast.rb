@@ -151,41 +151,44 @@ class Forecast < ActiveRecord::Base
   end
 
   def set_now_statement
-   temperature_now = self.temperature[0].to_i # in F
-   humidity_now = self.humidity[0].to_i # in %
+   temperature_now = self.temperature[0].to_i 
+   humidity_now = self.humidity[0].to_i 
    if sleepy_time?
-     self.now_statement = "Night time. Dear Lord. Don't you sleep? "
+      sleepy_time_array = ["Night time. Dear Lord. Don't you sleep?", "Why are you not in bed?!", "Up late, are we?"]
+      self.now_statement = sleepy_time_array[rand(0..sleepy_time_array-1)]
    else
      if very_hot? && humid?
-         hot_and_humid_array = ["Mother Nature forgot her meds today", "Hot and gross! Kind of like a wet gym sock left out in a hamper.", "Like hot molasses.", "I am done reporting the weather. This sucks."]
+         hot_and_humid_array = ["Mother Nature forgot her meds today", "Hot and gross! Like a wet gym sock left out in a hamper.", "Like hot molasses.", "I am done reporting the weather. This sucks.", "No greenhouse necessary."]
          self.now_statement = hot_and_humid_array[rand(0..hot_and_humid_array-1)]
      elsif very_hot? && comfortably_humid?
-         self.now_statement = "Extremely hot! But at least it's not too humid."
+        hot_and_ok_array = ["Make sure to hydrate.", "Extremely hot! But at least not too humid.", "I don't know everything, but I do know it's nice out."]
+        self.now_statement = hot_and_ok_array[rand(0..hot_and_ok_array-1)]
      elsif very_hot?
-         hot_and_dry_array = ["Where are you, Death Valley?!", "HOT.DRY. Are you on Venus?", "Insert amazing weather forecast here. Sorry, it sucks out."]
+         hot_and_dry_array = ["Where are you, Death Valley?!", "HOT.DRY. Are you on Venus?", "Insert amazing weather forecast here. Sorry, it sucks out.", "Weather is misbehaving."]
          self.now_statement = hot_and_dry_array[rand(0..hot_and_dry_array-1)]
      elsif reasonably_hot? && humid?
-         hot_and_humid_array = ["Hot and gross! Consider a move to Antarctica.", "I hear Lake Titicaca is nice this time of year.", "New goal: become a penguin and move somewhere cold."]
+         hot_and_humid_array = ["Hot and gross! Consider a move to Antarctica.", "I hear Lake Titicaca is nice this time of year.", "New goal: become a penguin and move somewhere cold.", "Buy a dehumidifier and turn your AC on. Don't move until the weather changes."]
          self.now_statement = hot_and_humid_array[rand(0..hot_and_humid_array.length-1)]
      elsif reasonably_hot? && comfortably_humid?
          hot_and_comfortable_array = ["Eek pretty hot! But at least it's not too humid.", "Hot. Not Muggy. Go play outdoors.", "HOT. Be happy it is not humid."] 
          self.now_statement = hot_and_comfortable_array[rand(0..hot_and_comfortable_array.length-1)]
      elsif reasonably_hot?
-         self.now_statement = "Pretty darn hot, with dry heat!"
+        reasonably_hot_array = ["Pretty darn hot, with dry heat!", "I feel like an old sweatshirt, fresh out of a dryer."]  
+        self.now_statement = reasonably_hot_array[rand(0..reasonably_hot_array.length-1)]
      elsif warm? && humid?
-         warm_and_humid_array = ["Decent weather out, but so humid you could grow moss."]
+         warm_and_humid_array = ["Decent weather out, but so humid you could grow moss.", "It would be SO much nicer if it were not as humid.", "Thick'n'humid."]
          self.now_statement = warm_and_humid_array[rand(0..warm_and_humid_array.length-1)]
      elsif warm? && comfortably_humid?
-         pleasant_array = ["Pleasant as shit out.", "Silky and smooth out", "Goldilocks approves of the weather totay", "Next app idea: how to make an app to re-live this weather at will.", "Good day for Groundhog Day part II"]
+         pleasant_array = ["Pleasant as shit out.", "Silky and smooth out", "Goldilocks approves of the weather totay", "Next app idea: how to make an app to re-live this weather at will.", "Good day for Groundhog Day part II.", "Wow, the weather is nice for once!"]
          self.now_statement = pleasant_array[rand(0..pleasant_array.length-1)]
      elsif warm?
-         warm_and_dry_array = ["Every once in a while, just stop bitching about the weather.", "We all know it's hot and dry. Stop complaining.", ]
+         warm_and_dry_array = ["Every once in a while, just stop bitching about the weather.", "We all know it's hot and dry. Stop complaining.", "Good time for a cold beer."]
          self.now_statement = warm_and_dry_array[rand(0..warm_and_dry_array.length-1)]
      elsif comfortable?
-       comfortable_array = ["Not exactly warm. Layer up.", "Don't you wish you were somewhere warm right now?", "I hear mulled wine is nice for this weather."]
+       comfortable_array = ["Not exactly warm. Layer up.", "Don't you wish you were somewhere warm right now?", "I hear mulled wine is nice for this weather.", "Hot tea. Lots of it. Maybe with some whisky."]
        self.now_statement = comfortable_array[rand(0..comfortable_array.length-1)]
      else 
-       cold_array = ["COLD. I hope you are a penguin.", "Bring out your trusty Uggs"]
+       cold_array = ["COLD. I hope you are a penguin.", "Bring out your trusty Uggs", "'Tis the season to winterize yourself.", "Time to look into a Bahamas vacation?"]
        self.now_statement = cold_array[rand(0..cold_array.length-1)]
      end 
    end 
