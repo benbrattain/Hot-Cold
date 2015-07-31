@@ -141,7 +141,6 @@ class Forecast < ActiveRecord::Base
   def collect_correct_weather_for_season
     if DateTime.now<DateTime.new(2015,10,15)
       self.seasonal_index = collect_heat_index
-      # binding.pry
     else
       self.seasonal_index = collect_wind_chill
     end
@@ -150,44 +149,6 @@ class Forecast < ActiveRecord::Base
   def set_time              
     @time = Time.now.to_a[2]
   end
-
-  # def set_now_statement
-  #   temperature_now = self.temperature[0].to_i # in F
-  #   humidity_now = self.humidity[0].to_i # in %
-  #   if sleepy_time?
-  #     self.now_statement = "night time. Dear Lord. Don't you sleep? "
-  #   else
-  #     if very_hot?
-  #       if humid?
-  #         self.now_statement = "hot and gross! Kind of like a wet gym sock left out in a hamper."
-  #       elsif comfortably_humid?
-  #         self.now_statement = "extremely hot! But at least it's not too humid."
-  #       else 
-  #         self.now_statement = "pretty darn hot, but at least it's dry heat!"
-  #       end
-  #     elsif reasonably_hot?
-  #       if humid?
-  #         self.now_statement = "hot and gross! Consider a move to Antarctica."
-  #       elsif comfortably_humid?
-  #         self.now_statement = "eek pretty hot! But at least it's not too humid."
-  #       else
-  #         self.now_statement = "pretty darn hot, with dry heat!"
-  #       end
-  #     elsif warm?
-  #       if humid?
-  #         self.now_statement = "it is comfortable out, but very humid!"
-  #       elsif comfortably_humid?
-  #         self.now_statement = "comfortable temperature. Goldilocks approves of the weather today."
-  #       else
-  #         self.now_statement = "not too hot, maybe a bit dry! Every once in a while, just stop bitching about the weather."
-  #       end
-  #     elsif comfortable?
-  #       self.now_statement = "not exactly warm. Layer up."
-  #     else 
-  #       self.now_statement = "COLD. I hope you are a penguin."
-  #     end 
-  #   end 
-  # end 
 
   def set_now_statement
    temperature_now = self.temperature[0].to_i # in F
@@ -275,7 +236,6 @@ class Forecast < ActiveRecord::Base
     self.conditions_icon = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["icon_url"]}.first
   end
 
-  # discrepancy methods
   def calculate_discrepancy
     self.discrepancy = []
     i = 0
@@ -284,12 +244,12 @@ class Forecast < ActiveRecord::Base
       self.discrepancy << num
       i += 1
     end
-    self.discrepancy # returns correct array
+    self.discrepancy 
   end
 
   def find_discrepancy_max
     self.calculate_discrepancy
-    self.max_discrepancy = self.discrepancy.max # returns correct max discrepancy from the array
+    self.max_discrepancy = self.discrepancy.max
   end
 
   def find_discrepancy_index
