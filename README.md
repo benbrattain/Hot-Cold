@@ -2,7 +2,7 @@
 
 ## Description
 
-https://gentle-gorge-9983.herokuapp.com/forecasts
+http://theweatherproject.herokuapp.com/
 
 What's the temperature like outside and what does it actually feel like? Do you need sunscreen (well, you always benefit from sunscreen) and can you get away with wearing a T-shirt? Do you need your umbrella? 
 
