@@ -27,7 +27,9 @@ class Forecast < ActiveRecord::Base
                 :all_hours,
                 :max_time,
                 :max_day,
-                :seasonal_index
+                :seasonal_index,
+                :today,
+                :day_in_36_hours
 
   def store_location
     self.store_city
@@ -69,22 +71,31 @@ class Forecast < ActiveRecord::Base
     array.values_at(* array.each_index.select {|i| i.even?})
   end
   
+  def collect_unformatted_hours
+    @unformatted_hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["hour"].to_i }
+    @unformatted_hours = filter_array_length(@unformatted_hours)
+  end
+
   def collect_hours 
-    unformatted_hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["hour"]}
     self.hours = []
-    unformatted_hours = filter_array_length(unformatted_hours)
-    unformatted_hours.each do |hour|
-      if hour.to_i == 0 
-        hour = "midnight"
-      elsif hour.to_i.between?(13,23)
-        hour = "#{hour.to_i - 12}pm"
-      elsif hour.to_i == 12
-        hour = "noon"
-      else
-        hour = "#{hour.to_i}am"
+    collect_unformatted_hours
+    @unformatted_hours.each do |hour|
+      case hour
+      when 0 then hour = "midnight"
+      when 12 then hour = "noon"
+      when 13..23 then hour = "#{hour.to_i - 12}pm" 
+      else hour = "#{hour.to_i}am"
       end
       self.hours << hour
     end
+  end
+
+  def day_today
+    @time.between?(15,24) ? self.today = "tonight" : self.today = "today"
+  end
+
+  def day_in_36_hours
+    @time.between?(1,12) ? self.day_in_36_hours = "tomorrow" : self.day_in_36_hours = "the day after tomorrow"
   end
 
   def collect_humidity 
@@ -123,6 +134,9 @@ class Forecast < ActiveRecord::Base
     self.discrepancy?
     self.t_shirt_weather?
     self.need_suncreen?
+    self.day_today
+    self.day_in_36_hours
+    self.collect_unformatted_hours
   end
 
   # http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
@@ -138,11 +152,8 @@ class Forecast < ActiveRecord::Base
   end 
 
   def collect_correct_weather_for_season
-    if DateTime.now<DateTime.new(2015,10,15)
-      self.seasonal_index = collect_heat_index
-    else
-      self.seasonal_index = collect_wind_chill
-    end
+    DateTime.now<DateTime.new(2015,10,15) ? 
+      self.seasonal_index = collect_heat_index : self.seasonal_index = collect_wind_chill
   end
 
   def set_time              
@@ -271,7 +282,6 @@ class Forecast < ActiveRecord::Base
 
   def find_discrepancy_max
     self.calculate_discrepancy
-    # binding.pry
     if self.discrepancy.any?{|x| x <= -3 }
       self.max_discrepancy = self.discrepancy.min
     else
@@ -332,9 +342,9 @@ class Forecast < ActiveRecord::Base
     end
   end
 
-  def thunder? # "Scattered Thunderstorms", "Isolated Thunderstorms", "Thunderstorms", "Heavy Thunderstorms"
+  def thunder? # "Scattered Thunderstorms", "Isolated Thunderstorms", "Thunderstorms", "Heavy Thunderstorms", etc
     status_now = self.status[0]
-    status_now.include?("Thunder") 
+    status_now.downcase.include?("thunder") 
   end
 
   def clear_or_sunny?
@@ -342,9 +352,9 @@ class Forecast < ActiveRecord::Base
     status_now == "Clear" || status_now == "Mostly Sunny" || status_now == "Sunny" || status_now == "Mostly Clear"
   end
 
-  def cloudy?
+  def cloudy? # "Partly Cloudy" || status_now == "Mostly Cloudy" || status_now == "Cloudy"
     status_now = self.status[0]
-    status_now == "Partly Cloudy" || status_now == "Mostly Cloudy" || status_now == "Cloudy"
+    status_now.downcase.include?("cloud")
   end
 
   def daytime?
