@@ -7,7 +7,6 @@ class ForecastsController < ApplicationController
   def create
     @forecast = Forecast.create(zipcode: params["forecast"]["zipcode"])
     @forecast.store_zip_output
-
     if @forecast.valid_zip?
       @forecast.store_location
       @forecast.collect_data
