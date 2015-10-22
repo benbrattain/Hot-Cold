@@ -20,43 +20,6 @@
  <div class = "row top-padding">
     <div class= "col-md-5">
     <div class = "padding">
-    <% @data_temps = {
-    labels: @forecast.hours, 
-    datasets: [
-        {
-            label: "Forecasted Temperature, F",
-            fillColor: "rgba(220,220,220,0.2)",
-            strokeColor: "rgba(0,0,0,1)",
-            pointColor: "rgba(0,0,0,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(0,0,0,1)",
-            data: @forecast.temperature
-        },
-        {
-            label: "Actual Temperature, F",
-            fillColor: "rgba(151,187,205,0.2)",
-            strokeColor: "rgba(178,34,34,1)",
-            pointColor: "rgba(178,34,34,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(151,187,205,1)",
-            data: @forecast.seasonal_index
-        }
-    ]
-}
-
-@options_temps =    {animationEasing: "easeOutElastic",
-                    scaleFontColor: "black",
-                    scaleFontSize: 14,
-                    responsive: true,
-                    datasetFill: false,
-                    width: 475,
-                    height: 475,
-                    scaleLineColor: "rgba(0,0,0,1)",
-                    scaleGridLineColor: "rgba(250,128,114,0.1)"
-                    } %>
-
     <center>
         <h4 class = 'dash-font'>
             <span class= 'red'>
@@ -64,9 +27,9 @@
             </span>
         </h4>
     <h4 class = 'dash-font'> Actual Temperature </h4>
-    <h6 class = 'dash-font'> <%= @forecast.hours.first %> <%= @forecast.today %> to <%= @forecast.hours.last %> <%= @forecast.day_in_36_hours %> </h6>
+
     </center>
-    <%= line_chart @data_temps, @options_temps %>
+    <%= line_chart @forecast.data_temps, @forecast.options_temps %>
 </div>
 </div>
 

@@ -384,4 +384,46 @@ class Forecast < ActiveRecord::Base
     end
   end
 
+  def data_temps
+    {
+      labels: hours, 
+      datasets: [
+          {
+            label: "Forecasted Temperature, F",
+            fillColor: "rgba(220,220,220,0.2)",
+            strokeColor: "rgba(0,0,0,1)",
+            pointColor: "rgba(0,0,0,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(0,0,0,1)",
+            data: temperature
+          },
+          {
+            label: "Actual Temperature, F",
+            fillColor: "rgba(151,187,205,0.2)",
+            strokeColor: "rgba(178,34,34,1)",
+            pointColor: "rgba(178,34,34,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: seasonal_index
+          }
+        ]
+    }
+  end
+
+  def options_temps
+    {
+      animationEasing: "easeOutElastic",
+      scaleFontColor: "black",
+      scaleFontSize: 14,
+      responsive: true,
+      datasetFill: false,
+      width: 475,
+      height: 475,
+      scaleLineColor: "rgba(0,0,0,1)",
+      scaleGridLineColor: "rgba(250,128,114,0.1)"
+    }
+  end
+
 end # ends class
