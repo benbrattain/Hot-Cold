@@ -24,6 +24,7 @@ This app is meant to solve an existing problem -- we often find that weather for
 
 Wunderground.com API | JSON format
 Chart.js for charting
+Bootstrap for front-end
 Deployed to Heroku
 
 ## Usage
