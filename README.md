@@ -22,7 +22,9 @@ This app is meant to solve an existing problem -- we often find that weather for
 
 ## Features
 
-Wunderground.com API 
+Wunderground.com API | JSON format
+Chart.js for charting
+Deployed to Heroku
 
 ## Usage
 
