@@ -29,7 +29,9 @@ class Forecast < ActiveRecord::Base
                 :max_day,
                 :seasonal_index,
                 :today,
-                :day_in_36_hours
+                :day_in_36_hours,
+                :forecast_data,
+                :unformatted_hours
 
   def store_location
     self.store_city
@@ -47,24 +49,25 @@ class Forecast < ActiveRecord::Base
   end
 
   def store_city 
-    self.city = self.zip_output[:city]
+    self.city = zip_output[:city]
   end
 
   def store_state 
-    self.state = self.zip_output[:state_code]
+    self.state = zip_output[:state_code]
   end
 
   def city_to_slug 
-    self.city_slug = self.city.downcase.gsub(" ", "_")
+    self.city_slug = city.downcase.gsub(" ", "_")
   end
 
   def to_url 
-    api = ENV["weather_api"]
-    self.url = "http://api.wunderground.com/api/#{api}/hourly/q/#{self.state}/#{self.city_slug}.json"
+    api_token = ENV["weather_api"]
+    self.url = "http://api.wunderground.com/api/#{api_token}/hourly/q/#{state}/#{city_slug}.json"
   end
 
   def scrape_json 
-    @api_response = open(self.url).read
+    api_response = open(url).read
+    self.forecast_data = JSON.parse(api_response)
   end
 
   def filter_array_length(array)
@@ -72,14 +75,13 @@ class Forecast < ActiveRecord::Base
   end
   
   def collect_unformatted_hours
-    @unformatted_hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["hour"].to_i }
-    @unformatted_hours = filter_array_length(@unformatted_hours)
+    self.unformatted_hours = filter_array_length (forecast_data["hourly_forecast"].collect {|hash| hash["FCTTIME"]["hour"].to_i })
   end
 
   def collect_hours 
     self.hours = []
     collect_unformatted_hours
-    @unformatted_hours.each do |hour|
+    unformatted_hours.each do |hour|
       case hour
       when 0 then hour = "midnight"
       when 12 then hour = "noon"
@@ -99,44 +101,44 @@ class Forecast < ActiveRecord::Base
   end
 
   def collect_humidity 
-    self.humidity = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["humidity"]}
+    self.humidity = forecast_data["hourly_forecast"].collect {|hash| hash["humidity"]}
     self.humidity = filter_array_length(self.humidity)
   end
 
   def collect_temperature 
-    self.temperature = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["temp"]["english"]}
+    self.temperature = forecast_data["hourly_forecast"].collect {|hash| hash["temp"]["english"].to_i}
     self.temperature = filter_array_length(self.temperature)
   end
 
   def collect_wind_speed 
-    self.wind_speed = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["wspd"]["english"]}
+    self.wind_speed = forecast_data["hourly_forecast"].collect {|hash| hash["wspd"]["english"]}
     self.wind_speed = filter_array_length(self.wind_speed)
   end
 
   def collect_status 
-    self.status = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["wx"]}
+    self.status = forecast_data["hourly_forecast"].collect {|hash| hash["wx"]}
     self.status = filter_array_length(self.status)
   end
 
   def collect_data
-    self.scrape_json
-    self.collect_hours
-    self.collect_temperature
-    self.collect_humidity
-    self.collect_heat_index
-    self.collect_wind_speed
-    self.collect_wind_chill
-    self.collect_correct_weather_for_season
-    self.collect_status
-    self.collect_uv_index
-    self.set_now_statement
-    self.set_conditions_icon
-    self.discrepancy?
-    self.t_shirt_weather?
-    self.need_suncreen?
-    self.day_today
-    self.day_in_36_hours
-    self.collect_unformatted_hours
+    scrape_json
+    collect_hours
+    collect_temperature
+    collect_humidity
+    collect_heat_index
+    collect_wind_speed
+    collect_wind_chill
+    collect_seasonal_index
+    collect_status
+    collect_uv_index
+    set_now_statement
+    set_conditions_icon
+    discrepancy?
+    t_shirt_weather?
+    need_suncreen?
+    day_today
+    day_in_36_hours
+    collect_unformatted_hours
   end
 
   # http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
@@ -151,9 +153,16 @@ class Forecast < ActiveRecord::Base
     self.wind_chill = wind_chill_calculator.calculate
   end 
 
-  def collect_correct_weather_for_season
-    DateTime.now<DateTime.new(2015,10,15) ? 
-      self.seasonal_index = collect_heat_index : self.seasonal_index = collect_wind_chill
+  def collect_seasonal_index
+    self.seasonal_index = []
+    temperature.each_with_index do |temp, index|
+      if temp >= 70
+        self.seasonal_index << heat_index[index]
+      elsif temp > 50
+        self.seasonal_index << temperature[index]  
+      else self.seasonal_index << wind_chill[index]
+      end
+    end
   end
 
   def set_time              
@@ -161,8 +170,8 @@ class Forecast < ActiveRecord::Base
   end
 
   def set_now_statement
-   temperature_now = self.temperature[0].to_i 
-   humidity_now = self.humidity[0].to_i 
+   temperature_now = temperature[0].to_i 
+   humidity_now = humidity[0].to_i 
    if sleepy_time?
       sleepy_time_array = ["Night time. Dear Lord. Don't you sleep?", "Why are you not in bed?!", "Up late, are we?"]
       self.now_statement = sleepy_time_array[rand(0..sleepy_time_array.length-1)]
@@ -205,10 +214,10 @@ class Forecast < ActiveRecord::Base
          self.now_statement = warm_and_humid_array[rand(0..warm_and_humid_array.length-1)]
      elsif warm? && comfortably_humid?
           if clear_or_sunny?
-            pleasant_array = ["Pleasant as shit out.", "Silky and smooth out", "Goldilocks approves of the weather totay", "Next app idea: how to make an app to re-live this weather at will.", "Good day for Groundhog Day part II.", "Wow, the weather is nice for once!", "You are my sunshine, my only sunshine."]
+            pleasant_array = ["Pleasant as shit out.", "Weather working for YOU today.", "Goldilocks approved weather today", "Bottle this weather and save it for a rainy day.", "Wow, the weather is totally nice!", "You are my sunshine, my only sunshine."]
             self.now_statement = pleasant_array[rand(0..pleasant_array.length-1)]
           else
-            pleasant_array = ["Pleasant as shit out.", "Silky and smooth out", "Goldilocks approves of the weather totay", "Next app idea: how to make an app to re-live this weather at will.", "Good day for Groundhog Day part II.", "Wow, the weather is nice for once!"]
+            pleasant_array = ["Pleasant as shit out.", "Weather working for YOU today.", "Goldilocks approved weather today", "Bottle this weather and save it for a rainy day.", "Wow, the weather is totally nice!"]
             self.now_statement = pleasant_array[rand(0..pleasant_array.length-1)]
           end
      elsif warm?
@@ -218,7 +227,7 @@ class Forecast < ActiveRecord::Base
        comfortable_array = ["Not exactly warm. Layer up.", "Don't you wish you were somewhere warm right now?", "I hear mulled wine is nice for this weather.", "Hot tea. Lots of it. Maybe with some whisky."]
        self.now_statement = comfortable_array[rand(0..comfortable_array.length-1)]
      else 
-       cold_array = ["COLD. I hope you are a penguin.", "Bring out your trusty Uggs", "'Tis the season to winterize yourself.", "Time to look into a Bahamas vacation?"]
+       cold_array = ["COLD. Like penguin cold.", "Bring out your trusty Uggs", "'Tis the season to winterize yourself.", "Time to look into a Bahamas vacation?"]
        self.now_statement = cold_array[rand(0..cold_array.length-1)]
      end 
    end 
@@ -266,7 +275,7 @@ class Forecast < ActiveRecord::Base
   end
 
   def set_conditions_icon 
-    self.conditions_icon = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["icon_url"]}.first
+    self.conditions_icon = forecast_data["hourly_forecast"].collect {|hash| hash["icon_url"]}.first
   end
 
   def calculate_discrepancy
@@ -293,7 +302,7 @@ class Forecast < ActiveRecord::Base
     self.find_discrepancy_max
     self.discrepancy_index_array = self.discrepancy.each_index.select{|x| self.discrepancy[x] == self.discrepancy.max} # returns array of correct indices
     self.first_discrepancy = self.discrepancy_index_array.first 
-    self.all_hours = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["FCTTIME"]["pretty"]}
+    self.all_hours = forecast_data["hourly_forecast"].collect {|hash| hash["FCTTIME"]["pretty"]}
     self.discrepancy_index = self.all_hours[self.first_discrepancy] 
     self.max_time = self.discrepancy_index.split(" ")[0]+self.all_hours[self.first_discrepancy].split(" ")[1] 
     if Time.now.to_a[3] == self.discrepancy_index.split(" ")[5].split(",").join("").to_i
@@ -363,7 +372,7 @@ class Forecast < ActiveRecord::Base
   end
 
   def collect_uv_index # returns an array of 36 elements
-    self.uv_index = JSON.parse(@api_response)["hourly_forecast"].collect {|hash| hash["uvi"]}
+    self.uv_index = forecast_data["hourly_forecast"].collect {|hash| hash["uvi"]}
     self.uv_index = filter_array_length(self.uv_index)
   end
 

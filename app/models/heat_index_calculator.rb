@@ -13,10 +13,6 @@ class HeatIndexCalculator
     while i < forecast.temperature.length do
       temp = temp(i)
       humidity = humidity(i)
-      simple_heat_index = simple_heat_index(temp, humidity)
-      full_heat_index = full_heat_index(temp, humidity)
-      dry_and_hot_adjustment = dry_and_hot_adjustment(temp, humidity)
-      humid_and_hot_adjustment = humid_and_hot_adjustment(temp, humidity)
       run_heat_index_calc(temp, humidity)
       i += 1
     end 
@@ -62,15 +58,7 @@ class HeatIndexCalculator
   end
 
   def full_heat_index(temp, humidity)
-    (-42.379 + (2.04901523*temp) + 
-    (10.14333127*humidity) - 
-    (0.22475541*temp*humidity) - 
-    (0.00683783*temp*temp) - 
-    (0.05481717*humidity*humidity) + 
-    (0.00122874*temp*temp*humidity) + 
-    (0.00085282*temp*humidity*humidity) - 
-    (0.00000199*temp*temp*humidity*humidity))
-    .to_i
+    (-42.379 + (2.04901523*temp) + (10.14333127*humidity) - (0.22475541*temp*humidity) - (0.00683783*temp*temp) - (0.05481717*humidity*humidity) + (0.00122874*temp*temp*humidity) + (0.00085282*temp*humidity*humidity) - (0.00000199*temp*temp*humidity*humidity)).to_i
   end
 
   def humid_and_hot_adjustment(temp, humidity)
