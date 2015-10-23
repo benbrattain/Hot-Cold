@@ -122,6 +122,7 @@ class Forecast < ActiveRecord::Base
 
   def collect_data
     scrape_json
+    store_zip_output
     collect_hours
     collect_temperature
     collect_humidity
@@ -233,39 +234,47 @@ class Forecast < ActiveRecord::Base
    end 
  end
 
+  def temperature_now
+    seasonal_index[0].to_i
+  end
+
+  def humidity_now
+    humidity[0].to_i
+  end
+
   def humid?
-    humidity_now = self.humidity[0].to_i
+    
     humidity_now >= 60
   end
 
   def comfortably_humid?
-    humidity_now = self.humidity[0].to_i
+    
     humidity_now.between?(43,59)
   end
 
 
   def dry_air?
-    humidity_now = self.humidity[0].to_i
+    
     humidity_now <= 42
   end
 
   def very_hot?
-    temperature_now = self.heat_index[0].to_i
+    
     temperature_now >= 90
   end
 
   def reasonably_hot?
-    temperature_now = self.heat_index[0].to_i
+    
     temperature_now >= 80 && temperature_now <= 89
   end
  
   def warm? 
-    temperature_now = self.heat_index[0].to_i
+    
     temperature_now >= 60 && temperature_now <= 79
   end
 
   def comfortable?
-    temperature_now = self.heat_index[0].to_i
+    
     temperature_now >= 42 && temperature_now <= 59
   end
 
@@ -331,9 +340,8 @@ class Forecast < ActiveRecord::Base
   end
 
   def t_shirt_weather? # Sunny above 65 F; Cloudy above 68 F; Rainy above 73 F
-    temperature_now = self.heat_index[0].to_i # in F
-    humidity_now = self.humidity[0].to_i # in %
-    status_now = self.status[0]
+     # in F
+     # in %
     if daytime? # will only show up if it is daytime
       if temperature_now >= 65 
         if clear_or_sunny?
@@ -352,17 +360,17 @@ class Forecast < ActiveRecord::Base
   end
 
   def thunder? # "Scattered Thunderstorms", "Isolated Thunderstorms", "Thunderstorms", "Heavy Thunderstorms", etc
-    status_now = self.status[0]
+    status_now = status[0]
     status_now.downcase.include?("thunder") 
   end
 
   def clear_or_sunny?
-    status_now = self.status[0]
+    status_now = status[0]
     status_now == "Clear" || status_now == "Mostly Sunny" || status_now == "Sunny" || status_now == "Mostly Clear"
   end
 
   def cloudy? # "Partly Cloudy" || status_now == "Mostly Cloudy" || status_now == "Cloudy"
-    status_now = self.status[0]
+    status_now = status[0]
     status_now.downcase.include?("cloud")
   end
 
@@ -382,13 +390,13 @@ class Forecast < ActiveRecord::Base
     if daytime? 
       case uv_now
       when 3..5
-        self.uv_statement = "UV index is moderate, but we recommend sunscreen."
+        self.uv_statement = "UV index is moderate (#{uv_now}), but we recommend sunscreen."
       when 6..7
-        self.uv_statement = "UV index is pretty high. Grab your trusty SPF 30+."
+        self.uv_statement = "UV index is pretty high (#{uv_now}). Grab your trusty SPF 30+."
       when 8..10
-        self.uv_statement = "UV index is really high. Cover up."
+        self.uv_statement = "UV index is really high (#{uv_now}). Cover up."
       when 11..12 # uv index is always between 0 and 12
-        self.uv_statement = "UV index is dangerously high right now. Cover up. Stay indoors."
+        self.uv_statement = "UV index is dangerously high right now (#{uv_now}). Cover up. Stay indoors."
       end
     end
   end
