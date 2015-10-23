@@ -10,10 +10,6 @@ Most importantly, what will it really feel like outside in the next 36 hours? Ha
 
 We tell you using our scientifically calculated heat index and wind chill factors, depending on the season. 
 
-## Screenshots
-
-Add some spiffy screenshots of your app here.
-
 ## Background
 
 Flatiron School Project Mode Week 1. The goal was to create a functioning app from ideation to execution and presenting to others within 5 days.
@@ -26,10 +22,13 @@ Wunderground.com API | JSON format
 Chart.js for charting
 Bootstrap for front-end
 Deployed to Heroku
+ZipCodes gem for conversion of zipcodes to city and state
+
+This app creates a Forecast object using a valid zip code. It converts a zip code into verbal city and state that are slugified to generate a url for Wunderground.com API. A JSON object with API data is then used to generate an array of actual 36 hours forecast as well as the 'real-feel' temperature (heat index or windchill depending on the current date).
 
 ## Usage
 
-Enter your U.S. zip code and we will tell you all you need to know to right now and for the next 36 hours. 
+Enter your U.S. zip code (the app will check if it's valid), and we will tell you all you need to know to right now and for the next 36 hours. 
 
 ## Development/Contribution
 
