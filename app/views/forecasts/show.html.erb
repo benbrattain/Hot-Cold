@@ -32,8 +32,11 @@
     <div class = "col-md-5">
       <div class = "padding dash-font"> 
         <p> Right now it's <%=@forecast.temperature[0]%>°F,  <%=@forecast.humidity[0]%>% humidity <img src ="<%=@forecast.conditions_icon%>"> </p>
-        <br>   
-        <p>Feels like <%=@forecast.heat_index[0]%>°F. </p>
+        <% if @forecast.current_temp_dif? %>
+          <br><p>Feels like <%=@forecast.seasonal_index[0]%>°F. </p>
+        <%end%>
+        <br>
+        <p><%=@forecast.wind_statement%></p>
         <br>
         <p><%= @forecast.discrepancy_statement %></p>
         <br>
