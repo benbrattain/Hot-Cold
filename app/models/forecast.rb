@@ -14,9 +14,7 @@ class Forecast < ActiveRecord::Base
                 :wind_chill,
                 :now_statement,
                 :conditions_icon,
-                :discrepancy,
                 :discrepancy_index,
-                :max_discrepancy,
                 :discrepancy_statement,
                 :first_discrepancy,
                 :status,
@@ -293,28 +291,24 @@ class Forecast < ActiveRecord::Base
     self.conditions_icon = forecast_data["hourly_forecast"][0]["icon_url"]
   end
 
-  def calculate_discrepancy
-    self.discrepancy = []
-    i = 0
-    while i < self.heat_index.length
-      num = self.heat_index[i].to_i - self.temperature[i].to_i
-      self.discrepancy << num
-      i += 1
+  def discrepancy
+    discrepancy_array = []
+    seasonal_index.each_with_index do |season_temp, index|
+      discrepancy = season_temp - temperature[index]
+      discrepancy_array << discrepancy
     end
-    self.discrepancy 
+    discrepancy_array
   end
 
-  def find_discrepancy_max
-    calculate_discrepancy
+  def max_discrepancy
     if discrepancy.any?{|x| x <= -3 }
-      self.max_discrepancy = discrepancy.min
+      discrepancy.min
     else
-      self.max_discrepancy = discrepancy.max
+      discrepancy.max
     end
   end
 
   def find_discrepancy_index
-    find_discrepancy_max
     discrepancy_index_array = discrepancy.each_index.select{|x| self.discrepancy[x] == self.discrepancy.max} # returns array of correct indices
     self.first_discrepancy = discrepancy_index_array.first 
     self.all_hours = forecast_data["hourly_forecast"].collect {|hash| hash["FCTTIME"]["pretty"]}
@@ -328,15 +322,14 @@ class Forecast < ActiveRecord::Base
   end
 
   def discrepancy?
-    self.find_discrepancy_max
     self.find_discrepancy_index
-    if self.find_discrepancy_max >= 7
+    if max_discrepancy >= 7
       self.discrepancy_statement = 
       "It will feel MUCH hotter than what meteorologists said starting around #{self.max_time} #{self.max_day}."
-    elsif self.find_discrepancy_max.between?(4,6)
+    elsif max_discrepancy.between?(4,6)
       self.discrepancy_statement = 
       "Watch out! It will feel much hotter than forecasted starting around #{self.max_time} #{self.max_day}."
-    elsif self.find_discrepancy_max < 0
+    elsif max_discrepancy < 0
       self.discrepancy_statement = 
       "It will feel cooler than it actually is today."
     else
@@ -368,7 +361,7 @@ class Forecast < ActiveRecord::Base
   def wind_statement
     if wind_speed[0] > 1
       "Winds are currently at #{wind_speed[0]} mph."
-    else "Winds are calm"
+    else "Winds are calm."
     end
   end
 
@@ -421,11 +414,11 @@ class Forecast < ActiveRecord::Base
           {
             label: "Forecasted Temperature, F",
             fillColor: "rgba(220,220,220,0.2)",
-            strokeColor: "rgba(0,0,0,1)",
-            pointColor: "rgba(0,0,0,1)",
+            strokeColor: "rgba42,47,76,1)",
+            pointColor: "rgba(42,47,76,1)",
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(0,0,0,1)",
+            pointHighlightStroke: "rgba(42,47,76,1)",
             data: temperature
           },
           {
