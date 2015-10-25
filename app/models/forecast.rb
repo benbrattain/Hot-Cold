@@ -186,7 +186,7 @@ class Forecast < ActiveRecord::Base
    else
      if very_hot? && humid?
           if clear_or_sunny?
-            hot_and_humid_array = ["Mother Nature forgot her meds today.", "Hot and gross! Like a wet gym sock left out in a hamper.", "Like hot molasses.", "I am done reporting the weather. This sucks.", "No greenhouse necessary.", "You are my Sunshine."]
+            hot_and_humid_array = ["Mother Nature off her meds today.", "Hot and gross! Like a wet gym sock left out in a hamper.", "Like hot molasses.", "I am done reporting the weather. This sucks.", "No greenhouse necessary.", "You are my Sunshine."]
             self.now_statement = hot_and_humid_array.sample
           else
             hot_and_humid_array = ["Mother Nature off her meds today.", "Hot and gross! Like a wet gym sock left out in a hamper.", "Like hot molasses.", "I am done reporting the weather. This sucks.", "No greenhouse necessary."]
@@ -235,7 +235,7 @@ class Forecast < ActiveRecord::Base
        comfortable_array = ["Not exactly warm. Layer up.", "Don't you wish you were somewhere warm right now?", "I hear mulled wine is nice for this weather.", "Hot tea. Lots of it. Maybe with some whisky."]
        self.now_statement = comfortable_array.sample
      else 
-       cold_array = ["COLD. Like penguin cold.", "Break out your trusty Uggs ladies/Bufaloe pelts gents.", "'Tis the season to winterize yourself.", "Bout time to look into that Bahamas vacation."]
+       cold_array = ["COLD. Like penguin cold.", "Break out your trusty Uggs ladies / Buffalo pelts gents.", "'Tis the season to winterize yourself.", "Bout time to look into that Bahamas vacation."]
        self.now_statement = cold_array.sample
      end 
    end 
