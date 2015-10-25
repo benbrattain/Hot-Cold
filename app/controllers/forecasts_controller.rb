@@ -1,22 +1,23 @@
 class ForecastsController < ApplicationController
 
-  def index
+  def new
     @forecast = Forecast.new
   end
 
   def create
-    @forecast = Forecast.create(zipcode: params["forecast"]["zipcode"])
-    @forecast.store_zip_output
-
+    @forecast = Forecast.new(zipcode: params["forecast"]["zipcode"])
     if @forecast.valid_zip?
-      @forecast.store_location
-      @forecast.collect_data
       @forecast.save
-      render "forecasts/create.html.erb"
+      redirect_to forecast_path(@forecast)
     else 
       flash[:notice] = "Please enter a valid zip code."
-      redirect_to root_path
+      redirect_to new_forecast_path
     end
+  end
+
+  def show
+    @forecast = Forecast.find(params[:id])
+    @forecast.process_forecast
   end
 
 end
